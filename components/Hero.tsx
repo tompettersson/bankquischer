@@ -108,10 +108,10 @@ const floatingCards = [
     content: (
       <div className="bg-white px-6 py-3 rounded-full flex items-center gap-1 shadow-lg">
         <span className="text-2xl text-[#FFDB65]">★</span>
-        <span className="text-2xl text-[#F5B8F5]">★</span>
-        <span className="text-2xl text-[#9BC5E3]">★</span>
-        <span className="text-2xl text-[#B7EDB4]">★</span>
-        <span className="text-2xl text-[#F5403D]">★</span>
+        <span className="text-2xl text-[#FFDB65]">★</span>
+        <span className="text-2xl text-[#FFDB65]">★</span>
+        <span className="text-2xl text-[#FFDB65]">★</span>
+        <span className="text-2xl text-[#FFDB65]">★</span>
       </div>
     ),
     position: "left-[20%] top-[62%]",
