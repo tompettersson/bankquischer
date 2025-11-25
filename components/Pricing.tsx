@@ -41,13 +41,13 @@ export default function Pricing() {
       comingSoon: false,
     },
     {
-      name: 'Lahntal Bankquischer',
-      price: 'Bald verfügbar',
-      description: 'Die Lahntal-Edition. Perfekt für Wanderungen entlang der Lahn.',
+      name: 'Helgoländer Bankquischer',
+      price: 'Coming Soon',
+      description: 'Die Helgoland-Edition. Für alle Inselliebhaber.',
       features: [
         'Microfasertuch 20 x 30 cm',
         'Pouch mit Karabiner',
-        'Lahntal-Logo',
+        'Helgoland-Logo',
         'Made in Germany',
         'Immer dabei',
       ],
@@ -56,13 +56,13 @@ export default function Pricing() {
       comingSoon: true,
     },
     {
-      name: 'Westerwald Bankquischer',
-      price: 'Bald verfügbar',
-      description: 'Die Westerwald-Edition. Für Naturfreunde im Westerwald.',
+      name: 'Ostsee Bankquischer',
+      price: 'Coming Soon',
+      description: 'Die Ostsee-Edition. Perfekt für Ostseeurlaub.',
       features: [
         'Microfasertuch 20 x 30 cm',
         'Pouch mit Karabiner',
-        'Westerwald-Logo',
+        'Ostsee-Logo',
         'Made in Germany',
         'Immer dabei',
       ],
@@ -104,8 +104,8 @@ export default function Pricing() {
             >
               {plan.comingSoon && (
                 <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-[#9BC5E3]/20 text-[#9BC5E3] text-xs rounded-full font-medium border border-[#9BC5E3]/30">
-                    Bald verfügbar
+                  <span className="px-3 py-1 bg-[#D4E9F7] text-[#4A90E2] text-xs rounded-full font-medium border border-[#4A90E2]/20">
+                    Coming Soon
                   </span>
                 </div>
               )}
