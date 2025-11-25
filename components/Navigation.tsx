@@ -20,7 +20,7 @@ export default function Navigation() {
         {/* Logo */}
         <div className="flex items-center">
           <img
-            src="/S-Logo.svg"
+            src="/s-logo.svg"
             alt="Bankquischer Sylt Logo"
             className="h-24 w-auto"
           />
