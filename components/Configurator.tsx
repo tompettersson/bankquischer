@@ -68,15 +68,33 @@ const colorPalette = [
   { id: 51, name: 'Schwarz', hex: '#000000' },
 ];
 
+// Karabiner-Farben basierend auf dem Bild
+const carabinerColors = [
+  { id: 1, name: 'Grün', hex: '#4CAF50' },
+  { id: 2, name: 'Blau', hex: '#2196F3' },
+  { id: 3, name: 'Lila', hex: '#9C27B0' },
+  { id: 4, name: 'Schwarz', hex: '#212121' },
+  { id: 5, name: 'Pink', hex: '#E91E63' },
+  { id: 6, name: 'Türkis', hex: '#00BCD4' },
+  { id: 7, name: 'Silber', hex: '#BDBDBD' },
+  { id: 8, name: 'Gelb', hex: '#FFC107' },
+  { id: 9, name: 'Hellgrün', hex: '#8BC34A' },
+  { id: 10, name: 'Rot', hex: '#F44336' },
+];
+
 // SVG Wireframe des Bankquischers - geometrisch sauber, zusammengefaltete Tasche
 function BankquischerPreview({
   color,
-  text,
-  logoUrl
+  textLine1,
+  textLine2,
+  logoUrl,
+  carabinerColor
 }: {
   color: string;
-  text: string;
+  textLine1: string;
+  textLine2: string;
   logoUrl: string | null;
+  carabinerColor: string;
 }) {
   // Berechne dunklere Farbe für Schatten/Kanten
   const darkerColor = color === '#FFFFFF' ? '#E0E0E0' : color;
@@ -84,7 +102,7 @@ function BankquischerPreview({
   return (
     <svg
       viewBox="0 0 400 280"
-      className="w-full h-auto max-w-md mx-auto"
+      className="w-full h-auto max-w-xl mx-auto"
       style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.15))' }}
     >
       <defs>
@@ -160,10 +178,16 @@ function BankquischerPreview({
         <circle cx="240" cy="140" r="7" fill="#F5F5F5"/>
         <circle cx="240" cy="140" r="4" fill="#D0D0D0"/>
 
-        {/* === KARABINER-RING (rechts unten) === */}
-        <g transform="translate(248, 185)">
-          <ellipse cx="12" cy="12" rx="10" ry="12" fill="none" stroke="#4A90D9" strokeWidth="3"/>
-          <line x1="5" y1="3" x2="19" y2="3" stroke="#4A90D9" strokeWidth="2"/>
+        {/* === KARABINER-RING (rechts unten) - S-Form === */}
+        <g transform="translate(245, 175)">
+          {/* S-förmiger Karabiner */}
+          <path
+            d="M8 5 C2 5, 2 15, 8 15 L16 15 C22 15, 22 25, 16 25 L8 25 C2 25, 2 35, 8 35"
+            fill="none"
+            stroke={carabinerColor}
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
         </g>
 
         {/* === LOGO BEREICH (links) === */}
@@ -205,56 +229,42 @@ function BankquischerPreview({
 
         {/* === TEXT BEREICH (rechts vom Logo) === */}
         <g>
-          {/* Regionsname / Firmenname */}
+          {/* Zeile 1 - Große Schrift (konfigurierbar) */}
           <text
             x="100"
             y="75"
             textAnchor="start"
             fill="white"
-            fontSize={text.length > 12 ? "22" : "28"}
+            fontSize={textLine1.length > 15 ? "18" : textLine1.length > 10 ? "22" : "26"}
             fontFamily="Georgia, serif"
-            fontStyle="italic"
-          >
-            {text || 'Sylter'}
-          </text>
-
-          {/* "Bankquischer" */}
-          <text
-            x="100"
-            y="105"
-            textAnchor="start"
-            fill="white"
-            fontSize="22"
-            fontFamily="Arial, sans-serif"
             fontWeight="bold"
           >
-            Bankquischer
+            {textLine1 || 'Sylter Bankquischer'}
           </text>
 
-          {/* Slogan Zeile 1 */}
+          {/* Zeile 2 - Kleine Schrift (konfigurierbar) */}
           <text
             x="100"
-            y="140"
+            y="110"
             textAnchor="start"
             fill="white"
-            fontSize="14"
+            fontSize={textLine2.length > 25 ? "11" : "13"}
             fontFamily="Georgia, serif"
             fontStyle="italic"
           >
-            Das Aufsaugwunder !
+            {textLine2 || 'Das Aufsaugwunder!'}
           </text>
 
-          {/* Slogan Zeile 2 */}
+          {/* Feste URL unten */}
           <text
             x="100"
-            y="175"
+            y="180"
             textAnchor="start"
             fill="white"
-            fontSize="13"
-            fontFamily="Georgia, serif"
-            fontStyle="italic"
+            fontSize="11"
+            fontFamily="Arial, sans-serif"
           >
-            Kein Taschentuch, saubere Sache
+            www.bankquischer.de
           </text>
         </g>
       </g>
@@ -267,7 +277,9 @@ export default function Configurator() {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   const [selectedColor, setSelectedColor] = useState(colorPalette[34]); // Dunkelblau als Default
-  const [customText, setCustomText] = useState('');
+  const [selectedCarabiner, setSelectedCarabiner] = useState(carabinerColors[1]); // Blau als Default
+  const [textLine1, setTextLine1] = useState('');
+  const [textLine2, setTextLine2] = useState('');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoFileName, setLogoFileName] = useState<string>('');
   const [contactEmail, setContactEmail] = useState('');
@@ -306,7 +318,7 @@ export default function Configurator() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Hier würde normalerweise die Anfrage versendet werden
-    alert(`Vielen Dank für Ihre Anfrage!\n\nFarbe: ${selectedColor.name}\nText: ${customText}\nMenge: ${quantity} Stück\n\nWir melden uns zeitnah bei Ihnen.`);
+    alert(`Vielen Dank für Ihre Anfrage!\n\nFarbe: ${selectedColor.name}\nKarabiner: ${selectedCarabiner.name}\nText: ${textLine1} / ${textLine2}\nMenge: ${quantity} Stück\n\nWir melden uns zeitnah bei Ihnen.`);
   };
 
   return (
@@ -344,8 +356,10 @@ export default function Configurator() {
               </h3>
               <BankquischerPreview
                 color={selectedColor.hex}
-                text={customText}
+                textLine1={textLine1}
+                textLine2={textLine2}
                 logoUrl={logoUrl}
+                carabinerColor={selectedCarabiner.hex}
               />
               <p className="text-center text-gray-500 text-sm mt-4">
                 Farbe: {selectedColor.name}
@@ -383,26 +397,65 @@ export default function Configurator() {
                 </div>
               </div>
 
-              {/* Text Input */}
+              {/* Karabiner-Farbauswahl */}
               <div>
                 <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  2. Text eingeben
+                  2. Karabiner-Farbe wählen
                 </label>
-                <input
-                  type="text"
-                  value={customText}
-                  onChange={(e) => setCustomText(e.target.value)}
-                  placeholder="z.B. Sylter, Rügener, Münchner..."
-                  maxLength={25}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2E5A4B] focus:ring-2 focus:ring-[#2E5A4B]/20 outline-none transition-all"
-                />
-                <p className="text-xs text-gray-500 mt-1">{customText.length}/25 Zeichen</p>
+                <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-xl">
+                  {carabinerColors.map((color) => (
+                    <button
+                      key={color.id}
+                      type="button"
+                      onClick={() => setSelectedCarabiner(color)}
+                      className={`w-8 h-8 rounded-full transition-all hover:scale-110 ${
+                        selectedCarabiner.id === color.id
+                          ? 'ring-2 ring-offset-2 ring-[#2E5A4B] scale-110'
+                          : 'ring-1 ring-gray-300'
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-2">Gewählt: {selectedCarabiner.name}</p>
+              </div>
+
+              {/* Text Inputs */}
+              <div className="space-y-4">
+                <label className="block text-sm font-semibold text-gray-900">
+                  3. Text eingeben
+                </label>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Große Schrift (Zeile 1)</label>
+                  <input
+                    type="text"
+                    value={textLine1}
+                    onChange={(e) => setTextLine1(e.target.value)}
+                    placeholder="z.B. Sylter Bankquischer, Firmenname..."
+                    maxLength={30}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2E5A4B] focus:ring-2 focus:ring-[#2E5A4B]/20 outline-none transition-all"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{textLine1.length}/30 Zeichen</p>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Kleine Schrift (Zeile 2)</label>
+                  <input
+                    type="text"
+                    value={textLine2}
+                    onChange={(e) => setTextLine2(e.target.value)}
+                    placeholder="z.B. Das Aufsaugwunder!, Slogan..."
+                    maxLength={40}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2E5A4B] focus:ring-2 focus:ring-[#2E5A4B]/20 outline-none transition-all"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{textLine2.length}/40 Zeichen</p>
+                </div>
               </div>
 
               {/* Logo Upload */}
               <div>
                 <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  3. Logo hochladen
+                  4. Logo hochladen
                 </label>
                 <div className="relative">
                   <input
@@ -507,15 +560,6 @@ export default function Configurator() {
           </motion.div>
         </div>
 
-        {/* Exklusiv-Vertrieb Hinweis */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="text-center text-sm text-gray-400 mt-16"
-        >
-          Exklusiv-Vertriebsrechte RADEJOKO UG
-        </motion.p>
       </div>
     </section>
   );

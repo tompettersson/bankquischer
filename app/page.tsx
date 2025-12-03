@@ -3,7 +3,6 @@ import Hero from '@/components/Hero';
 import TrustedBy from '@/components/TrustedBy';
 import Features from '@/components/Features';
 import MoreFeatures from '@/components/MoreFeatures';
-import Testimonials from '@/components/Testimonials';
 import Community from '@/components/Community';
 import Pricing from '@/components/Pricing';
 import Configurator from '@/components/Configurator';
@@ -18,7 +17,6 @@ export default function Home() {
       <TrustedBy />
       <Features />
       <MoreFeatures />
-      <Testimonials />
       <Community />
       <Pricing />
       <Configurator />

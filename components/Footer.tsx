@@ -85,6 +85,7 @@ export default function Footer() {
             <p>GF: Dionysia A. van Herk</p>
             <p>HRB 25009 Amtsgericht Montabaur</p>
             <p>USt.-Id.: DE305612848</p>
+            <p className="mt-2 font-medium">Exklusiv-Vertrieb: RADEJOKO GmbH</p>
           </div>
         </div>
       </div>
