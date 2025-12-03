@@ -101,8 +101,8 @@ function BankquischerPreview({
 
   return (
     <svg
-      viewBox="0 0 400 280"
-      className="w-full h-auto max-w-xl mx-auto"
+      viewBox="0 0 500 280"
+      className="w-full h-auto"
       style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.15))' }}
     >
       <defs>
@@ -122,10 +122,10 @@ function BankquischerPreview({
       </defs>
 
       {/* Hintergrund */}
-      <rect width="400" height="280" fill="#FDF8F3" rx="12"/>
+      <rect width="500" height="280" fill="#FDF8F3" rx="12"/>
 
       {/* === BANKQUISCHER TASCHE === */}
-      <g transform="translate(70, 30)">
+      <g transform="translate(20, 30)">
 
         {/* Obere Schlaufe */}
         <rect x="20" y="0" width="30" height="20" fill={darkerColor} rx="2"/>
@@ -136,10 +136,10 @@ function BankquischerPreview({
           d="M0 20
              L0 200
              L15 220
-             L245 220
-             L260 200
-             L260 20
-             L245 8
+             L445 220
+             L460 200
+             L460 20
+             L445 8
              L15 8
              Z"
           fill={color}
@@ -148,10 +148,10 @@ function BankquischerPreview({
           d="M0 20
              L0 200
              L15 220
-             L245 220
-             L260 200
-             L260 20
-             L245 8
+             L445 220
+             L460 200
+             L460 20
+             L445 8
              L15 8
              Z"
           fill="url(#fabricPattern)"
@@ -165,7 +165,7 @@ function BankquischerPreview({
 
         {/* Untere Kante */}
         <path
-          d="M0 200 L15 220 L245 220 L260 200 Z"
+          d="M0 200 L15 220 L445 220 L460 200 Z"
           fill="rgba(0,0,0,0.06)"
         />
 
@@ -174,12 +174,12 @@ function BankquischerPreview({
         <rect x="20" y="220" width="30" height="20" fill="url(#fabricPattern)" rx="2"/>
 
         {/* === DRUCKKNOPF (rechts) === */}
-        <circle cx="240" cy="140" r="10" fill="#E8E8E8"/>
-        <circle cx="240" cy="140" r="7" fill="#F5F5F5"/>
-        <circle cx="240" cy="140" r="4" fill="#D0D0D0"/>
+        <circle cx="440" cy="140" r="10" fill="#E8E8E8"/>
+        <circle cx="440" cy="140" r="7" fill="#F5F5F5"/>
+        <circle cx="440" cy="140" r="4" fill="#D0D0D0"/>
 
         {/* === KARABINER-RING (rechts unten) - S-Form === */}
-        <g transform="translate(245, 175)">
+        <g transform="translate(445, 175)">
           {/* S-förmiger Karabiner */}
           <path
             d="M8 5 C2 5, 2 15, 8 15 L16 15 C22 15, 22 25, 16 25 L8 25 C2 25, 2 35, 8 35"
@@ -231,11 +231,11 @@ function BankquischerPreview({
         <g>
           {/* Zeile 1 - Große Schrift (konfigurierbar) */}
           <text
-            x="100"
-            y="75"
+            x="110"
+            y="80"
             textAnchor="start"
             fill="white"
-            fontSize={textLine1.length > 15 ? "18" : textLine1.length > 10 ? "22" : "26"}
+            fontSize={textLine1.length > 25 ? "20" : textLine1.length > 18 ? "24" : "30"}
             fontFamily="Georgia, serif"
             fontWeight="bold"
           >
@@ -244,11 +244,11 @@ function BankquischerPreview({
 
           {/* Zeile 2 - Kleine Schrift (konfigurierbar) */}
           <text
-            x="100"
-            y="110"
+            x="110"
+            y="120"
             textAnchor="start"
             fill="white"
-            fontSize={textLine2.length > 25 ? "11" : "13"}
+            fontSize={textLine2.length > 35 ? "14" : "16"}
             fontFamily="Georgia, serif"
             fontStyle="italic"
           >
@@ -257,11 +257,11 @@ function BankquischerPreview({
 
           {/* Feste URL unten */}
           <text
-            x="100"
-            y="180"
+            x="110"
+            y="190"
             textAnchor="start"
             fill="white"
-            fontSize="11"
+            fontSize="13"
             fontFamily="Arial, sans-serif"
           >
             www.bankquischer.de
