@@ -3,64 +3,71 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
+import Image from 'next/image';
 
 export default function Community() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
-    <section ref={ref} className="py-24 md:py-32 bg-[#FDF8F3]">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-          {/* Platzhalter für zukünftiges Bild */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7 }}
-            className="relative"
-          >
-            <div className="relative rounded-2xl overflow-hidden bg-[#2E5A4B]/10 aspect-[6/5] flex items-center justify-center">
-              <div className="text-center text-[#2E5A4B]/40">
-                <svg className="w-20 h-20 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                </svg>
-                <p className="text-sm font-medium">Bild folgt</p>
-              </div>
-            </div>
-          </motion.div>
+    <section ref={ref} className="relative py-24 md:py-32 overflow-hidden">
+      {/* Hintergrundbild */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/bg.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          priority
+        />
+        {/* Overlay für besseren Kontrast */}
+        <div className="absolute inset-0 bg-black/50"></div>
+      </div>
 
-          {/* Text */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="space-y-6"
-          >
-            <p className="text-sm uppercase tracking-wider text-[#2E5A4B] font-semibold">
-              Unsere Geschichte
+      {/* Text - zentriert */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7 }}
+          className="space-y-6 text-center"
+        >
+          <p className="text-sm uppercase tracking-wider text-white/90 font-semibold">
+            Unsere Geschichte
+          </p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading font-semibold text-white leading-tight">
+            Wie der Bankquischer entstand
+          </h2>
+          <div className="space-y-4 text-white/90 text-base sm:text-lg leading-relaxed max-w-4xl mx-auto">
+            <p>
+              Seit Jahrzehnten gehören die Nord- und Ostsee zu unseren liebsten Urlaubszielen. Kaum etwas ist schöner, als nach einem ausgedehnten Spaziergang auf einer Bank Platz zu nehmen, den Blick über das Meer schweifen zu lassen und in aller Ruhe einen Sonnenuntergang zu genießen. Genau diese kleinen Momente machen einen Urlaub unvergesslich.
             </p>
-            <h2 className="text-4xl md:text-5xl font-heading font-semibold text-gray-900 leading-tight">
-              Qualität aus Tradition
-            </h2>
-            <div className="space-y-4 text-gray-600 text-lg leading-relaxed">
-              <p>
-                Was 1987 in einer kleinen Werkstatt begann, ist heute ein Qualitätsversprechen,
-                das Generationen verbindet. Hannelore und Jochen Slaby entwickelten den
-                Bankquischer aus der einfachen Überzeugung heraus, dass Reinigung keine
-                Kompromisse kennen sollte.
-              </p>
-              <p>
-                Ihr Anspruch an höchste Materialqualität und deutsche Handwerkskunst
-                prägt unser Produkt bis heute. Jeder Bankquischer trägt das Erbe
-                dieser Leidenschaft in sich.
-              </p>
-            </div>
-            <div className="flex items-center gap-4 pt-4">
-              <div className="w-12 h-1 bg-[#2E5A4B] rounded-full" />
-              <span className="text-[#2E5A4B] font-semibold">Seit 1987</span>
-            </div>
-          </motion.div>
-        </div>
+            <p>
+              Doch immer wieder gab es ein Problem: <strong className="text-white">nasse Bänke.</strong>
+            </p>
+            <p>
+              Ein kurzer Regenschauer – und die ersehnte Pause fiel buchstäblich ins Wasser. Papiertaschentücher gaben schnell auf, Baumwolltücher waren selten zur Hand und niemand möchte anschließend ein feuchtes Tuch in der Tasche herumtragen.
+            </p>
+            <p>
+              Die Lösung kam aus einer ganz anderen Ecke: moderne High-Tech-Textilien. Hochsaugfähig, schnelltrocknend und erstaunlich leicht. Warum, dachten wir, sollte es keine praktische, hochwertige Lösung speziell für solche alltäglichen Situationen geben?
+            </p>
+            <p className="font-semibold text-white">
+              So entstand der Bankquischer.
+            </p>
+            <p>
+              Ein Tuch in Spitzenqualität, gefertigt aus modernen Funktionsfasern – handlich, effizient, langlebig. Gefaltet in einem smarten, stilvollen Täschchen, das dank integriertem Karabinerhaken überall Platz findet: an der Handtasche, am Rucksack, am Fahrradkorb oder direkt am Gürtel. <strong className="text-white">Immer dabei. Immer bereit.</strong>
+            </p>
+            <p>
+              Schon die ersten Erstmuster sorgten bei unseren Testerinnen und Testern für Begeisterung. Viele erzählten uns, wie der Bankquischer endlich etwas löst, das sie seit Jahren im Alltag stört – und das mit überraschend wenig Aufwand.
+            </p>
+            <p className="text-xl font-semibold text-white italic pt-4">
+              Bankquischer – für trockene Pausen.
+              <br />
+              Damit schöne Momente nicht länger warten müssen.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
