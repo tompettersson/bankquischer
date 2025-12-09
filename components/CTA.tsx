@@ -10,16 +10,16 @@ export default function CTA() {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
-    <section ref={ref} className="py-32 bg-gradient-to-b from-blue-50 via-white to-white">
-      <div className="max-w-4xl mx-auto px-6 text-center">
+    <section ref={ref} className="py-32 bg-[#1a1a2e]">
+      <div className="max-w-3xl mx-auto px-6 text-center">
         <motion.div
           initial={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          <h2 className="text-5xl md:text-6xl font-semibold text-gray-900">
+          <h2 className="text-5xl md:text-6xl font-semibold text-white">
             Bereit für trockene Bänke?
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-300">
             Bestellen Sie jetzt Ihren Bankquischer und genießen Sie trockenes Sitzen - immer und überall.
           </p>
           <motion.div
@@ -29,7 +29,7 @@ export default function CTA() {
           >
             <Link
               href="#pricing"
-              className="inline-block px-8 py-4 bg-gray-900 text-white rounded-full font-medium text-lg hover:bg-gray-800 transition-colors"
+              className="inline-block px-8 py-4 bg-white text-gray-900 rounded-full font-medium text-lg hover:bg-gray-100 transition-colors"
             >
               Jetzt bestellen
             </Link>

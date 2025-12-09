@@ -7,7 +7,7 @@ import { Sun, CloudRain, Leaf, CloudSun, Heart, ShoppingCart } from "lucide-reac
 import { useState, useEffect } from "react";
 
 // Product slider component that alternates between products
-const ProductSlider = () => {
+const ProductSlider = ({ isMobile = false }: { isMobile?: boolean }) => {
   const [currentProduct, setCurrentProduct] = useState(0);
 
   const products = [
@@ -19,7 +19,7 @@ const ProductSlider = () => {
     {
       image: "/buesumer-produkt.png",
       name: "Bankquischer Büsum",
-      description: "Ideal für die Ostsee",
+      description: "Das Original aus Büsum",
     },
   ];
 
@@ -34,7 +34,7 @@ const ProductSlider = () => {
   const product = products[currentProduct];
 
   return (
-    <div className="relative w-64 h-72 overflow-visible">
+    <div className={`relative ${isMobile ? 'w-full h-full' : 'w-64 h-72'} overflow-visible`}>
       <div className="absolute inset-0 bg-white rounded-2xl shadow-lg"></div>
       {/* Product image - rotated opposite direction, larger, overflowing */}
       <motion.div
@@ -42,12 +42,13 @@ const ProductSlider = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="absolute -top-12 -left-8 -right-8 bottom-12 -rotate-12 scale-110"
+        className={`absolute ${isMobile ? '-top-8 -left-4 -right-4 bottom-8 -rotate-6 scale-105' : '-top-12 -left-8 -right-8 bottom-12 -rotate-12 scale-110'}`}
       >
         <Image
           src={product.image}
           alt={product.name}
           fill
+          sizes={isMobile ? "(max-width: 640px) 100vw, 384px" : "256px"}
           className="object-contain"
         />
       </motion.div>
@@ -57,22 +58,22 @@ const ProductSlider = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.2 }}
-        className="absolute bottom-3 left-4 z-10"
+        className={`absolute bottom-3 ${isMobile ? 'left-3 sm:left-4' : 'left-4'} z-10`}
       >
-        <p className="text-xs font-medium text-gray-900">{product.name}</p>
-        <p className="text-xs text-gray-600">{product.description}</p>
+        <p className={`${isMobile ? 'text-sm sm:text-base' : 'text-xs'} font-medium text-gray-900`}>{product.name}</p>
+        <p className={`${isMobile ? 'text-xs sm:text-sm' : 'text-xs'} text-gray-600`}>{product.description}</p>
       </motion.div>
       {/* Icons at bottom right */}
-      <div className="absolute bottom-3 right-3 flex gap-2 z-10">
-        <Heart className="w-5 h-5 text-[#F5403D] fill-[#F5403D]" />
-        <ShoppingCart className="w-5 h-5 text-gray-900" />
+      <div className={`absolute bottom-3 ${isMobile ? 'right-3 sm:right-4' : 'right-3'} flex gap-2 z-10`}>
+        <Heart className={`${isMobile ? 'w-6 h-6 sm:w-7 sm:h-7' : 'w-5 h-5'} text-[#F5403D] fill-[#F5403D]`} />
+        <ShoppingCart className={`${isMobile ? 'w-6 h-6 sm:w-7 sm:h-7' : 'w-5 h-5'} text-gray-900`} />
       </div>
       {/* Slider dots indicator */}
-      <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+      <div className={`absolute ${isMobile ? 'bottom-16 sm:bottom-20' : 'bottom-14'} left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-10`}>
         {products.map((_, index) => (
           <div
             key={index}
-            className={`w-1.5 h-1.5 rounded-full transition-colors ${
+            className={`${isMobile ? 'w-2 h-2 sm:w-2.5 sm:h-2.5' : 'w-1.5 h-1.5'} rounded-full transition-colors ${
               index === currentProduct ? "bg-gray-900" : "bg-gray-300"
             }`}
           />
@@ -91,6 +92,7 @@ const floatingCards = [
           src="/an-hose.jpg"
           alt="Bankquischer an der Hose"
           fill
+          sizes="(max-width: 640px) 100vw, 384px"
           className="object-cover"
         />
         {/* Optional overlay text */}
@@ -126,6 +128,7 @@ const floatingCards = [
           src="/tuch.tisch.jpg"
           alt="Bankquischer Tuch"
           fill
+          sizes="(max-width: 1024px) 100vw, 640px"
           className="object-cover"
         />
         {/* Product specs overlay */}
@@ -170,7 +173,7 @@ const floatingCards = [
   },
   {
     id: "product-slider",
-    content: <ProductSlider />,
+    content: <ProductSlider isMobile={false} />,
     position: "right-[14%] bottom-[18%]",
     delay: 0.6,
     noPadding: true,
@@ -188,12 +191,12 @@ export default function Hero() {
   return (
     <section className="relative bg-[#F9F8F5] overflow-hidden min-h-screen">
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-6 pt-12 pb-8 text-center relative z-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 md:pt-12 pb-6 sm:pb-8 text-center relative z-10">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-5xl md:text-6xl lg:text-7xl font-semibold text-gray-900 leading-tight tracking-tight"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 leading-tight tracking-tight"
           style={{ fontFamily: "var(--font-heading)" }}
         >
           Das <em className="italic">Aufsaugwunder</em>
@@ -205,31 +208,44 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="mt-6 text-lg text-gray-600 max-w-xl mx-auto"
+          className="mt-4 sm:mt-6 text-base sm:text-lg text-gray-600 max-w-xl mx-auto px-2"
         >
-          Von nass zu trocken in Sekunden — das Microfasertuch der neuesten Generation
-          für alle, die gerne draußen sitzen.
+          Das innovative Give-away für Hotels, Gastronomie und Unternehmen.
+          Von nass zu trocken in Sekunden.
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-8 flex flex-col sm:flex-row gap-4 justify-center"
+          className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
         >
           <Link
             href="#pricing"
-            className="px-8 py-4 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors"
+            className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 text-white rounded-full text-sm sm:text-base font-medium hover:bg-gray-800 transition-colors"
           >
-            Jetzt bestellen
+            Regionale Editionen
           </Link>
           <Link
-            href="#features"
-            className="px-8 py-4 border border-gray-300 rounded-full font-medium text-gray-900 hover:bg-white transition-colors"
+            href="#konfigurator"
+            className="px-6 sm:px-8 py-3 sm:py-4 border border-gray-300 rounded-full text-sm sm:text-base font-medium text-gray-900 hover:bg-white transition-colors"
           >
-            Produkt entdecken
+            Individuelles Design
           </Link>
         </motion.div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-4 text-center"
+        >
+          <Link
+            href="#konfigurator"
+            className="text-sm text-gray-600 hover:text-gray-900 underline underline-offset-2 transition-colors"
+          >
+            Auch mit eigenem Logo erhältlich →
+          </Link>
+        </motion.p>
       </div>
 
       {/* Center Tablet - Horizontal/Landscape */}
@@ -237,33 +253,34 @@ export default function Hero() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.3 }}
-        className="relative max-w-3xl mx-auto mt-8 mb-12 z-20 px-6"
+        className="relative max-w-3xl mx-auto mt-6 sm:mt-8 mb-8 sm:mb-12 z-20 px-4 sm:px-6"
       >
-        <div className="relative aspect-4/3 rounded-3xl overflow-hidden shadow-2xl border-12 border-gray-900 bg-gray-900">
+        <div className="relative aspect-4/3 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-8 sm:border-12 border-gray-900 bg-gray-900">
           <Image
             src="/key-visual.jpg"
             alt="Bankquischer in Aktion"
             fill
             priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 768px"
             className="object-cover"
           />
 
           {/* Weather overlay */}
-          <div className="absolute top-4 left-4 flex items-center gap-3 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full">
-            <CloudSun className="w-6 h-6 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Wechselhaft, 14°C</span>
+          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 flex items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-sm px-2 sm:px-4 py-1.5 sm:py-2 rounded-full">
+            <CloudSun className="w-4 h-4 sm:w-6 sm:h-6 text-gray-600" />
+            <span className="text-xs sm:text-sm font-medium text-gray-700">Wechselhaft, 14°C</span>
           </div>
 
           {/* Location badge */}
-          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-gray-700 text-sm font-medium px-4 py-2 rounded-full flex items-center gap-2">
-            <span>📍</span>
-            Nordsee
+          <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-white/90 backdrop-blur-sm text-gray-700 text-xs sm:text-sm font-medium px-2 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-1 sm:gap-2">
+            <span className="text-xs sm:text-sm">📍</span>
+            <span>Nordsee</span>
           </div>
 
           {/* Bottom info */}
-          <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-6">
-            <p className="text-white text-lg font-medium">Perfektes Bankwetter?</p>
-            <p className="text-white/80 text-sm">Mit dem Bankquischer immer trocken sitzen.</p>
+          <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-3 sm:p-6">
+            <p className="text-white text-sm sm:text-lg font-medium">Perfektes Bankwetter?</p>
+            <p className="text-white/80 text-xs sm:text-sm">Mit dem Bankquischer immer trocken sitzen.</p>
           </div>
         </div>
 
@@ -285,7 +302,7 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* Floating Cards */}
+      {/* Floating Cards - Desktop: Absolute positioned */}
       <div className="absolute inset-0 pointer-events-none hidden lg:block">
         {floatingCards.map((card) => (
           <motion.div
@@ -299,7 +316,7 @@ export default function Hero() {
           </motion.div>
         ))}
 
-        {/* Weather Icons */}
+        {/* Weather Icons - Desktop */}
         {weatherIcons.map((weather) => (
           <motion.div
             key={weather.id}
@@ -313,35 +330,161 @@ export default function Hero() {
         ))}
       </div>
 
-      {/* Product Variant Logos - Centered at bottom, no background */}
+      {/* Mobile/Tablet: Cards stacked vertically */}
+      <div className="lg:hidden max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8 space-y-6 sm:space-y-8 relative z-10">
+        {/* Weather Icons Row - Mobile/Tablet */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex items-center justify-center gap-6 sm:gap-8"
+        >
+          {weatherIcons.map((weather) => (
+            <motion.div
+              key={weather.id}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: weather.delay }}
+            >
+              <weather.Icon className={`${weather.size === "w-16 h-16" ? "w-12 h-12 sm:w-14 sm:h-14" : "w-10 h-10 sm:w-12 sm:h-12"} ${weather.color}`} />
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Lifestyle Card - Mobile/Tablet */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex justify-center"
+        >
+          <div className="relative w-full max-w-xs sm:max-w-sm h-64 sm:h-80 rounded-2xl overflow-hidden shadow-lg">
+            <Image
+              src="/an-hose.jpg"
+              alt="Bankquischer an der Hose"
+              fill
+              sizes="(max-width: 640px) 100vw, 384px"
+              className="object-cover"
+            />
+            <div className="absolute bottom-3 left-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg p-2 sm:p-3">
+              <p className="text-sm sm:text-base font-medium text-gray-900">Immer griffbereit</p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Review Stars - Mobile/Tablet */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="flex justify-center"
+        >
+          <div className="bg-white px-6 sm:px-8 py-3 sm:py-4 rounded-full flex items-center gap-1 sm:gap-2 shadow-lg">
+            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+          </div>
+        </motion.div>
+
+        {/* Product Specs - Mobile/Tablet */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="flex justify-center"
+        >
+          <div className="relative w-full max-w-md sm:max-w-lg rounded-2xl overflow-hidden shadow-lg" style={{ aspectRatio: '16/9' }}>
+            <Image
+              src="/tuch.tisch.jpg"
+              alt="Bankquischer Tuch"
+              fill
+              sizes="(max-width: 640px) 100vw, 576px"
+              className="object-cover"
+            />
+            <div className="absolute bottom-3 left-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg p-3 sm:p-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base">
+                <div>
+                  <p className="font-semibold text-gray-900">20 x 30 cm</p>
+                  <p className="text-gray-600">Kompaktformat</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Microfaser</p>
+                  <p className="text-gray-600">Ultra-saugfähig</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Absorbency Card - Mobile/Tablet */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          className="flex justify-center"
+        >
+          <div className="bg-[#FFDB65] p-4 sm:p-6 rounded-3xl w-full max-w-sm">
+            <p className="text-gray-600 text-sm sm:text-base font-medium mb-3 sm:mb-4">Saugstärke</p>
+            <div className="flex items-end gap-2 sm:gap-3">
+              <span className="text-4xl sm:text-5xl font-semibold text-gray-900">500%</span>
+              <div className="mb-1">
+                <p className="text-gray-900 text-sm sm:text-base font-medium">mehr als</p>
+                <p className="text-gray-900 text-sm sm:text-base font-medium">Baumwolle</p>
+              </div>
+            </div>
+            <div className="mt-3 sm:mt-4 inline-block bg-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full">
+              <p className="text-xs sm:text-sm font-semibold text-gray-900">Microfaser-Technologie</p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Product Slider - Mobile/Tablet */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="flex justify-center pb-6 sm:pb-8"
+        >
+          <div className="relative w-full max-w-xs sm:max-w-sm h-80 sm:h-96 overflow-visible">
+            <ProductSlider isMobile={true} />
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Slogan - Centered at bottom */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.6 }}
-        className="max-w-5xl mx-auto px-6 pb-16 relative z-10"
+        className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 relative z-10"
       >
-        {/* Slogan */}
-        <p className="text-center text-3xl md:text-4xl italic text-gray-900 mb-8" style={{ fontFamily: "var(--font-heading)" }}>
+        <p className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl italic text-gray-900 px-2" style={{ fontFamily: "var(--font-heading)" }}>
           "Trocken sitzt's sich besser."
         </p>
-        <div className="flex items-center justify-center gap-24">
-          <div className="relative h-28 w-48">
+        {/* Logos vorübergehend ausgeblendet
+        <div className="flex items-center justify-center gap-8 sm:gap-12 md:gap-16 lg:gap-24 flex-wrap mt-6 sm:mt-8">
+          <div className="relative h-16 w-32 sm:h-20 sm:w-40 md:h-24 md:w-44 lg:h-28 lg:w-48">
             <Image
               src="/s-logo.svg"
               alt="Bankquischer Sylt"
               fill
+              sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, (max-width: 1024px) 176px, 192px"
               className="object-contain"
             />
           </div>
-          <div className="relative h-28 w-48">
+          <div className="relative h-16 w-32 sm:h-20 sm:w-40 md:h-24 md:w-44 lg:h-28 lg:w-48">
             <Image
               src="/b-logo.svg"
               alt="Bankquischer Büsum"
               fill
+              sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, (max-width: 1024px) 176px, 192px"
               className="object-contain"
             />
           </div>
         </div>
+        */}
       </motion.div>
     </section>
   );

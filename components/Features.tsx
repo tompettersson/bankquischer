@@ -26,14 +26,14 @@ export default function Features() {
     },
     {
       title: "bankquischer büsum",
-      heading: "Ideal für die Ostsee",
+      heading: "Das Original aus Büsum",
       description:
-        "Der Bankquischer Büsum ist speziell für entspannte Tage an der Ostseeküste konzipiert. Das Microfasertuch der neuesten Generation trocknet nasse Bänke in Sekunden. Kompakt, wiederverwendbar und mit Karabiner-Clip - Ihr treuer Begleiter am Meer.",
+        "Der Bankquischer Büsum ist Ihr zuverlässiger Begleiter für entspannte Tage an der Nordseeküste. Das Microfasertuch der neuesten Generation trocknet nasse Bänke in Sekunden. Kompakt, wiederverwendbar und mit Karabiner-Clip - immer griffbereit.",
       items: [
         "20 x 30 cm Kompaktformat",
         "Ultra-saugfähige Microfaser",
         "Pouch mit Karabiner-Clip",
-        "Ideal für Ostsee-Abenteuer",
+        "Perfekt für die Nordsee",
       ],
       image: "/buesumer-produkt.png",
       gradient: "bg-[#B7EDB4]/40",
@@ -41,8 +41,8 @@ export default function Features() {
   ];
 
   return (
-    <section ref={ref} className="py-32 bg-white">
-      <div className="max-w-7xl mx-auto px-6 space-y-32">
+    <section ref={ref} className="py-16 sm:py-24 lg:py-32 bg-white" id="features">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-16 sm:space-y-24 lg:space-y-32">
         {features.map((feature, index) => (
           <motion.div
             key={index}
@@ -51,54 +51,55 @@ export default function Features() {
             viewport={{ once: true }}
             className={`flex flex-col ${
               index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
-            } items-center gap-12`}
+            } items-center gap-8 sm:gap-12`}
           >
-            <div className="flex-1">
-              <div className={`w-full h-96 ${feature.gradient} rounded-2xl flex items-center justify-center p-12 shadow-lg`}>
-                <div className="relative w-full h-full">
+            <div className="flex-1 w-full">
+              <div className={`w-full aspect-square sm:aspect-4/3 lg:h-96 lg:aspect-auto ${feature.gradient} rounded-2xl flex items-center justify-center p-6 sm:p-8 lg:p-12 shadow-lg`}>
+                <div className="relative w-full h-full min-h-[280px] sm:min-h-[320px]">
                   <Image
                     src={feature.image}
                     alt={feature.heading}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
                     className="object-contain"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex-1 space-y-6">
-              <motion.p className="text-sm uppercase tracking-wider text-gray-500">
+            <div className="flex-1 space-y-4 sm:space-y-6 w-full">
+              <motion.p className="text-xs sm:text-sm uppercase tracking-wider text-gray-500">
                 {feature.title}
               </motion.p>
 
-              <motion.h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
+              <motion.h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900">
                 {feature.heading}
               </motion.h2>
 
-              <motion.p className="text-lg text-gray-600 leading-relaxed">
+              <motion.p className="text-base sm:text-lg text-gray-600 leading-relaxed">
                 <strong>
                   {feature.description.split(" ").slice(0, 3).join(" ")}
                 </strong>{" "}
                 {feature.description.split(" ").slice(3).join(" ")}
               </motion.p>
 
-              <motion.div className="flex flex-wrap gap-4 pt-4">
+              <motion.div className="flex flex-wrap gap-2 sm:gap-4 pt-2 sm:pt-4">
                 {feature.items.map((item, itemIndex) => (
                   <motion.span
                     key={itemIndex}
-                    className="px-4 py-2 bg-gray-100 rounded-full text-gray-700 text-sm"
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-100 rounded-full text-gray-700 text-xs sm:text-sm"
                   >
                     {item}
                   </motion.span>
                 ))}
               </motion.div>
 
-              <motion.div className="pt-4">
+              <motion.div className="pt-2 sm:pt-4">
                 <motion.a
                   href="#pricing"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-block px-8 py-4 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors"
+                  className="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 text-white rounded-full text-sm sm:text-base font-medium hover:bg-gray-800 transition-colors"
                 >
                   Jetzt bestellen
                 </motion.a>

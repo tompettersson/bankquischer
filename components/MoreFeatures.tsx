@@ -10,8 +10,10 @@ export default function MoreFeatures() {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   const useCases = [
-    'Strandbänke', 'Parkbänke', 'Wanderwege', 'Spielplätze', 
-    'Campingplätze', 'Gartenmöbel', 'Terrassen', 'Bootsstege', 'Strandkörbe'
+    'Strandbänke', 'Parkbänke', 'Fahrradsattel', 'Biergärten', 
+    'Stadionbänke', 'Campingplätze', 'Strandkörbe', 'Bootsstege',
+    'Picknickbänke', 'Schaukeln', 'Gartenmöbel', 'Terrassen',
+    'Ruderbänke', 'Open-Air-Kinos', 'Außengastronomie', 'Tretboote'
   ];
 
   const featureCards = [
@@ -31,7 +33,7 @@ export default function MoreFeatures() {
 
   return (
     <section ref={ref} id="features" className="py-32 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
@@ -85,12 +87,12 @@ export default function MoreFeatures() {
               ))}
             </div>
             <p className="text-gray-600">
-              <strong>Überall einsetzbar</strong>. Der Bankquischer ist der perfekte Begleiter für alle Situationen, in denen Sie eine trockene Sitzfläche benötigen - von der Strandbank bis zum Gartenstuhl.
+              <strong>Überall einsetzbar</strong>. Der Bankquischer ist der perfekte Begleiter für alle Situationen, in denen Sie eine trockene Sitzfläche benötigen - ob beim Radfahren, im Biergarten oder beim Open-Air-Konzert.
             </p>
           </motion.div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-8 mb-20">
           {featureCards.map((card, index) => (
             <motion.div
               key={index}
@@ -102,6 +104,68 @@ export default function MoreFeatures() {
             </motion.div>
           ))}
         </div>
+
+        {/* Karabiner-Sektion */}
+        <motion.div
+          initial={{ opacity: 1, y: 0 }}
+          className="grid md:grid-cols-2 gap-12 items-center bg-[#F9F8F5] rounded-3xl p-8 md:p-12"
+        >
+          <div className="relative aspect-square max-w-md mx-auto md:mx-0 rounded-2xl overflow-hidden shadow-lg">
+            <Image
+              src="/karabiner.jpg"
+              alt="Praktischer Karabinerhaken des Bankquischers"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="space-y-6">
+            <h3 className="text-3xl md:text-4xl font-semibold text-gray-900">
+              Immer griffbereit dank Karabiner
+            </h3>
+            <p className="text-lg text-gray-600">
+              Der praktische Karabinerhaken macht den Bankquischer zum perfekten Begleiter für unterwegs.
+              Befestigen Sie ihn einfach und schnell überall dort, wo Sie ihn brauchen:
+            </p>
+            <ul className="grid grid-cols-2 gap-3 text-gray-700">
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                Am Gürtel
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                Am Fahrradlenker
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                An der Handtasche
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                Am Rucksack
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                An der Gürtelschlaufe
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                Am Kinderwagen
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                Am Rollator
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                Am Campingstuhl
+              </li>
+            </ul>
+            <p className="text-gray-600">
+              So haben Sie Ihren Bankquischer immer dabei und sind jederzeit bereit für eine trockene Sitzfläche -
+              egal ob beim Spaziergang, der Radtour oder dem Ausflug mit der Familie.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

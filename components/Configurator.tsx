@@ -2,9 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
+import Image from 'next/image';
 
-// Farbpaletten basierend auf den Stoffmustern (210)
+// Farbpaletten basierend auf den Stoffmustern (ohne zu helle Farben für weiße Schrift)
 const colorPalette = [
   // Rot/Pink Töne (Reihe 1)
   { id: 1, name: 'Dunkelrot', hex: '#8B1538' },
@@ -16,56 +17,52 @@ const colorPalette = [
   { id: 6, name: 'Hellrosa', hex: '#F8B4C8' },
   { id: 7, name: 'Rosa', hex: '#F4A4B8' },
   { id: 8, name: 'Lachs', hex: '#F5A589' },
-  { id: 9, name: 'Weiß', hex: '#FFFFFF' },
-  { id: 10, name: 'Karmin', hex: '#D32F2F' },
-  { id: 11, name: 'Gelb', hex: '#FFEB3B' },
+  { id: 9, name: 'Karmin', hex: '#D32F2F' },
+  { id: 10, name: 'Gelb', hex: '#FFEB3B' },
   // Beige/Grün Töne (Reihe 3)
-  { id: 12, name: 'Beige', hex: '#D4B896' },
-  { id: 13, name: 'Sand', hex: '#C9B896' },
-  { id: 14, name: 'Mint', hex: '#A8E6CF' },
-  { id: 15, name: 'Türkis', hex: '#4DD0C4' },
-  { id: 16, name: 'Petrol', hex: '#00838F' },
-  { id: 17, name: 'Olive', hex: '#9E9D24' },
-  { id: 18, name: 'Neongelb', hex: '#CCFF00' },
+  { id: 11, name: 'Beige', hex: '#D4B896' },
+  { id: 12, name: 'Sand', hex: '#C9B896' },
+  { id: 13, name: 'Mint', hex: '#A8E6CF' },
+  { id: 14, name: 'Türkis', hex: '#4DD0C4' },
+  { id: 15, name: 'Petrol', hex: '#00838F' },
+  { id: 16, name: 'Olive', hex: '#9E9D24' },
+  { id: 17, name: 'Neongelb', hex: '#CCFF00' },
   // Lila/Grau Töne (Reihe 4)
-  { id: 19, name: 'Violett', hex: '#7B1FA2' },
-  { id: 20, name: 'Lila', hex: '#9C27B0' },
-  { id: 21, name: 'Hellgrau', hex: '#BDBDBD' },
-  { id: 22, name: 'Grau', hex: '#9E9E9E' },
-  { id: 23, name: 'Altrosa', hex: '#D4A5A5' },
-  { id: 24, name: 'Rosé', hex: '#E8C4C4' },
+  { id: 18, name: 'Violett', hex: '#7B1FA2' },
+  { id: 19, name: 'Lila', hex: '#9C27B0' },
+  { id: 20, name: 'Grau', hex: '#9E9E9E' },
+  { id: 21, name: 'Altrosa', hex: '#D4A5A5' },
+  { id: 22, name: 'Rosé', hex: '#E8C4C4' },
   // Grautöne (Palette 2, Reihe 1)
-  { id: 25, name: 'Silber', hex: '#C0C0C0' },
-  { id: 26, name: 'Hellgrau 2', hex: '#E0E0E0' },
-  { id: 27, name: 'Mittelgrau', hex: '#757575' },
-  { id: 28, name: 'Anthrazit', hex: '#424242' },
-  { id: 29, name: 'Dunkelgrau', hex: '#616161' },
-  { id: 30, name: 'Taupe', hex: '#8D6E63' },
-  { id: 31, name: 'Creme', hex: '#FFF8E1' },
+  { id: 23, name: 'Silber', hex: '#C0C0C0' },
+  { id: 24, name: 'Mittelgrau', hex: '#757575' },
+  { id: 25, name: 'Anthrazit', hex: '#424242' },
+  { id: 26, name: 'Dunkelgrau', hex: '#616161' },
+  { id: 27, name: 'Taupe', hex: '#8D6E63' },
   // Blau/Grün Töne (Palette 2, Reihe 2)
-  { id: 32, name: 'Himmelblau', hex: '#87CEEB' },
-  { id: 33, name: 'Königsblau', hex: '#4169E1' },
-  { id: 34, name: 'Dunkelblau', hex: '#1A237E' },
-  { id: 35, name: 'Navy', hex: '#0D1B2A' },
-  { id: 36, name: 'Tannengrün', hex: '#1B5E20' },
-  { id: 37, name: 'Waldgrün', hex: '#2E7D32' },
-  { id: 38, name: 'Smaragd', hex: '#00695C' },
+  { id: 28, name: 'Himmelblau', hex: '#87CEEB' },
+  { id: 29, name: 'Königsblau', hex: '#4169E1' },
+  { id: 30, name: 'Dunkelblau', hex: '#1A237E' },
+  { id: 31, name: 'Navy', hex: '#0D1B2A' },
+  { id: 32, name: 'Tannengrün', hex: '#1B5E20' },
+  { id: 33, name: 'Waldgrün', hex: '#2E7D32' },
+  { id: 34, name: 'Smaragd', hex: '#00695C' },
   // Braun/Orange Töne (Palette 2, Reihe 3)
-  { id: 39, name: 'Dunkelbraun', hex: '#3E2723' },
-  { id: 40, name: 'Schokolade', hex: '#4E342E' },
-  { id: 41, name: 'Mokka', hex: '#5D4037' },
-  { id: 42, name: 'Kastanie', hex: '#6D4C41' },
-  { id: 43, name: 'Cognac', hex: '#8D6748' },
-  { id: 44, name: 'Caramel', hex: '#A1887F' },
+  { id: 35, name: 'Dunkelbraun', hex: '#3E2723' },
+  { id: 36, name: 'Schokolade', hex: '#4E342E' },
+  { id: 37, name: 'Mokka', hex: '#5D4037' },
+  { id: 38, name: 'Kastanie', hex: '#6D4C41' },
+  { id: 39, name: 'Cognac', hex: '#8D6748' },
+  { id: 40, name: 'Caramel', hex: '#A1887F' },
   // Bunt (Palette 2, Reihe 4)
-  { id: 45, name: 'Koralle', hex: '#FF7043' },
-  { id: 46, name: 'Apricot', hex: '#FFAB91' },
-  { id: 47, name: 'Lindgrün', hex: '#AED581' },
-  { id: 48, name: 'Grasgrün', hex: '#7CB342' },
-  { id: 49, name: 'Aqua', hex: '#4FC3F7' },
-  { id: 50, name: 'Azur', hex: '#29B6F6' },
+  { id: 41, name: 'Koralle', hex: '#FF7043' },
+  { id: 42, name: 'Apricot', hex: '#FFAB91' },
+  { id: 43, name: 'Lindgrün', hex: '#AED581' },
+  { id: 44, name: 'Grasgrün', hex: '#7CB342' },
+  { id: 45, name: 'Aqua', hex: '#4FC3F7' },
+  { id: 46, name: 'Azur', hex: '#29B6F6' },
   // Schwarz
-  { id: 51, name: 'Schwarz', hex: '#000000' },
+  { id: 47, name: 'Schwarz', hex: '#000000' },
 ];
 
 // Karabiner-Farben basierend auf dem Bild
@@ -82,7 +79,9 @@ const carabinerColors = [
   { id: 10, name: 'Rot', hex: '#F44336' },
 ];
 
-// SVG Wireframe des Bankquischers - geometrisch sauber, zusammengefaltete Tasche
+// SVG basierend auf dem Original bankquischer-tz.svg
+// ViewBox: 0 0 2270.1 1536
+// Hauptfläche: von x=350.4 bis x=1769.3, y=274.9 bis y=1280 (Höhe ~1005.1)
 function BankquischerPreview({
   color,
   textLine1,
@@ -96,130 +95,116 @@ function BankquischerPreview({
   logoUrl: string | null;
   carabinerColor: string;
 }) {
-  // Berechne dunklere Farbe für Schatten/Kanten
-  const darkerColor = color === '#FFFFFF' ? '#E0E0E0' : color;
+  // Paddings für Text und Logo innerhalb der Hauptfläche
+  // Hauptfläche: x=350.4 bis 1769.3 (Breite ~1419), y=274.9 bis 1280 (Höhe ~1005)
+  const mainAreaX = 350.4;
+  const mainAreaY = 274.9;
+  const mainAreaWidth = 1418.9;
+  const mainAreaHeight = 1005.1;
+  const padding = 80; // Padding zum Rand
+  
+  // Logo-Bereich (links) - Hochformat 9:16, vertikal zentriert
+  const logoX = mainAreaX + padding;
+  const logoWidth = 280;
+  const logoHeight = 498; // 280 * (16/9) ≈ 498 für 9:16 Hochformat
+  const logoY = mainAreaY + (mainAreaHeight - logoHeight) / 2; // vertikal zentriert
+  
+  // Text-Bereich (rechts vom Logo) - mit limitierter Breite für Umbrüche, vertikal zentriert
+  const textX = logoX + logoWidth + 60; // 60px Abstand zwischen Logo und Text
+  const textBlockHeight = 600; // geschätzte Höhe des Textblocks
+  const textY = mainAreaY + (mainAreaHeight - textBlockHeight) / 2;
+  const textMaxWidth = 1000; // Feste maximale Breite für Text, damit Überschrift richtig umbricht
 
   return (
     <svg
-      viewBox="0 0 500 280"
+      viewBox="0 0 2270.1 1536"
       className="w-full h-auto"
       style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.15))' }}
     >
       <defs>
-        {/* Stofftextur */}
-        <pattern id="fabricPattern" patternUnits="userSpaceOnUse" width="3" height="3">
-          <rect width="3" height="3" fill={color}/>
-          <rect width="1.5" height="1.5" fill="rgba(255,255,255,0.04)"/>
-          <rect x="1.5" y="1.5" width="1.5" height="1.5" fill="rgba(0,0,0,0.04)"/>
-        </pattern>
-        <filter id="innerShadow">
-          <feOffset dx="0" dy="2"/>
-          <feGaussianBlur stdDeviation="2"/>
-          <feComposite operator="out" in="SourceGraphic"/>
-          <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.15 0"/>
-          <feBlend in="SourceGraphic"/>
-        </filter>
+        <style>
+          {`
+            .st0 {
+              fill: none;
+              stroke-dasharray: 12;
+              stroke-width: 4px;
+              stroke: #1c1b1b;
+              stroke-miterlimit: 10;
+            }
+            .st1 {
+              fill: ${color};
+              stroke: #1c1b1b;
+              stroke-width: 7px;
+              stroke-miterlimit: 10;
+            }
+            .st2 {
+              fill: #edead7;
+            }
+          `}
+        </style>
       </defs>
 
-      {/* Hintergrund */}
-      <rect width="500" height="280" fill="#FDF8F3" rx="12"/>
 
-      {/* === BANKQUISCHER TASCHE === */}
-      <g transform="translate(20, 30)">
-
-        {/* Obere Schlaufe */}
-        <rect x="20" y="0" width="30" height="20" fill={darkerColor} rx="2"/>
-        <rect x="20" y="0" width="30" height="20" fill="url(#fabricPattern)" rx="2"/>
-
-        {/* Hauptkörper - Rechteck mit abgeschrägten Ecken */}
-        <path
-          d="M0 20
-             L0 200
-             L15 220
-             L445 220
-             L460 200
-             L460 20
-             L445 8
-             L15 8
-             Z"
-          fill={color}
-        />
-        <path
-          d="M0 20
-             L0 200
-             L15 220
-             L445 220
-             L460 200
-             L460 20
-             L445 8
-             L15 8
-             Z"
-          fill="url(#fabricPattern)"
+      <g>
+        {/* Obere Lasche */}
+        <rect className="st1" x="794.7" y="76.4" width="276.8" height="198.4"/>
+        
+        {/* Untere Lasche */}
+        <rect className="st1" x="794.7" y="1280" width="276.8" height="198.4"/>
+        
+        {/* Linke Lasche (rotiert) */}
+        <rect 
+          className="st1" 
+          x="112.8" 
+          y="678.2" 
+          width="276.8" 
+          height="198.4" 
+          transform="translate(-526.3 1028.6) rotate(-90)"
         />
 
-        {/* Linke Kante (leichter Schatten) */}
-        <path
-          d="M0 20 L15 8 L15 220 L0 200 Z"
-          fill="rgba(0,0,0,0.08)"
+        {/* Gestrichelte Faltlinien */}
+        <line className="st0" x1="350.4" y1="671.8" x2="151.9" y2="671.8"/>
+        <line className="st0" x1="350.4" y1="887.8" x2="151.9" y2="887.8"/>
+        <line className="st0" x1="1041.1" y1="274.9" x2="1041.1" y2="76.4"/>
+        <line className="st0" x1="825.1" y1="274.9" x2="825.1" y2="76.4"/>
+        <line className="st0" x1="1041.1" y1="1478.4" x2="1041.1" y2="1280"/>
+        <line className="st0" x1="825.1" y1="1478.4" x2="825.1" y2="1280"/>
+
+        {/* Hauptfläche mit abgerundeten Ecken und Druckknopf */}
+        <path 
+          className="st1" 
+          d="M1769.3,274.9H350.4v1005.1h1418.9s307.3-269.3,307.3-269.3v-468.5s-307.3-267.3-307.3-267.3ZM1940.9,834.7c-37.8,0-68.5-30.7-68.5-68.5s30.7-68.5,68.5-68.5,68.5,30.7,68.5,68.5-30.7,68.5-68.5,68.5Z"
         />
 
-        {/* Untere Kante */}
-        <path
-          d="M0 200 L15 220 L445 220 L460 200 Z"
-          fill="rgba(0,0,0,0.06)"
-        />
-
-        {/* Untere Schlaufe */}
-        <rect x="20" y="220" width="30" height="20" fill={darkerColor} rx="2"/>
-        <rect x="20" y="220" width="30" height="20" fill="url(#fabricPattern)" rx="2"/>
-
-        {/* === DRUCKKNOPF (rechts) === */}
-        <circle cx="440" cy="140" r="10" fill="#E8E8E8"/>
-        <circle cx="440" cy="140" r="7" fill="#F5F5F5"/>
-        <circle cx="440" cy="140" r="4" fill="#D0D0D0"/>
-
-        {/* === KARABINER-RING (rechts unten) - S-Form === */}
-        <g transform="translate(445, 175)">
-          {/* S-förmiger Karabiner */}
-          <path
-            d="M8 5 C2 5, 2 15, 8 15 L16 15 C22 15, 22 25, 16 25 L8 25 C2 25, 2 35, 8 35"
-            fill="none"
-            stroke={carabinerColor}
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-        </g>
-
-        {/* === LOGO BEREICH (links) === */}
+        {/* === LOGO BEREICH (links innerhalb der Hauptfläche) === */}
         {logoUrl ? (
           <image
             href={logoUrl}
-            x="25"
-            y="50"
-            width="70"
-            height="90"
+            x={logoX}
+            y={logoY}
+            width={logoWidth}
+            height={logoHeight}
             preserveAspectRatio="xMidYMid meet"
           />
         ) : (
           <g>
-            {/* Platzhalter-Silhouette (stilisierte Sylt-Form als Beispiel) */}
-            <path
-              d="M60 55
-                 C65 60, 70 65, 68 80
-                 C66 95, 55 110, 50 125
-                 C48 135, 52 140, 55 145
-                 L50 150
-                 C45 140, 42 130, 45 115
-                 C48 100, 55 85, 55 70
-                 C55 60, 58 55, 60 55Z"
-              fill="rgba(255,255,255,0.85)"
+            {/* Platzhalter für Logo */}
+            <rect
+              x={logoX}
+              y={logoY}
+              width={logoWidth}
+              height={logoHeight}
+              fill="rgba(255,255,255,0.3)"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeDasharray="8,4"
             />
             <text
-              x="55"
-              y="170"
+              x={logoX + logoWidth / 2}
+              y={logoY + logoHeight / 2}
               textAnchor="middle"
-              fill="rgba(255,255,255,0.5)"
-              fontSize="8"
+              fill="rgba(255,255,255,0.6)"
+              fontSize="80"
               fontFamily="sans-serif"
             >
               Ihr Logo
@@ -227,56 +212,72 @@ function BankquischerPreview({
           </g>
         )}
 
-        {/* === TEXT BEREICH (rechts vom Logo) === */}
-        <g>
-          {/* Zeile 1 - Große Schrift (konfigurierbar) */}
-          <text
-            x="110"
-            y="80"
-            textAnchor="start"
-            fill="white"
-            fontSize={textLine1.length > 25 ? "20" : textLine1.length > 18 ? "24" : "30"}
-            fontFamily="Georgia, serif"
-            fontWeight="bold"
-          >
-            {textLine1 || 'Sylter Bankquischer'}
-          </text>
+        {/* === TEXT BEREICH (rechts vom Logo, innerhalb der Hauptfläche) === */}
+        <foreignObject x={textX} y={textY} width={textMaxWidth} height="800">
+          <div style={{ 
+            color: 'white', 
+            fontFamily: 'Georgia, serif',
+            width: '100%',
+            maxWidth: `${textMaxWidth}px`
+          }}>
+            {/* Zeile 1 - Große Schrift (konfigurierbar) - 30% kleiner, mit Umbrüchen */}
+            <div style={{
+              fontSize: textLine1.length > 25 ? "101px" : textLine1.length > 18 ? "118px" : "135px",
+              fontWeight: "bold",
+              lineHeight: "1.2",
+              marginBottom: "20px",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
+              maxWidth: `${textMaxWidth}px`
+            }}>
+              {textLine1 || 'Sylter Bankquischer'}
+            </div>
 
-          {/* Zeile 2 - Kleine Schrift (konfigurierbar) */}
-          <text
-            x="110"
-            y="120"
-            textAnchor="start"
-            fill="white"
-            fontSize={textLine2.length > 35 ? "14" : "16"}
-            fontFamily="Georgia, serif"
-            fontStyle="italic"
-          >
-            {textLine2 || 'Das Aufsaugwunder!'}
-          </text>
+            {/* Zeile 2 - Kleine Schrift (konfigurierbar) - 30% kleiner */}
+            <div style={{
+              fontSize: textLine2.length > 35 ? "73px" : "84px",
+              fontStyle: "italic",
+              lineHeight: "1.2",
+              marginBottom: "20px",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
+              maxWidth: `${textMaxWidth}px`
+            }}>
+              {textLine2 || 'Das Aufsaugwunder!'}
+            </div>
 
-          {/* Feste URL unten */}
-          <text
-            x="110"
-            y="190"
-            textAnchor="start"
-            fill="white"
-            fontSize="13"
-            fontFamily="Arial, sans-serif"
-          >
-            www.bankquischer.de
-          </text>
-        </g>
+            {/* Feste URL unten - 30% kleiner */}
+            <div style={{
+              fontSize: "67px",
+              fontFamily: "Arial, sans-serif",
+              lineHeight: "1.2",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
+              maxWidth: `${textMaxWidth}px`
+            }}>
+              www.bankquischer.de
+            </div>
+          </div>
+        </foreignObject>
+
       </g>
     </svg>
   );
 }
 
+// Preset-Konfigurationen für regionale Editionen
+const presets: Record<string, { textLine1: string; textLine2: string }> = {
+  buesumer: { textLine1: 'Büsumer Bankquischer', textLine2: 'Das Aufsaugwunder!' },
+  sylter: { textLine1: 'Sylter Bankquischer', textLine2: 'Das Aufsaugwunder!' },
+  norderneyer: { textLine1: 'Norderneyer Bankquischer', textLine2: 'Das Aufsaugwunder!' },
+  ruegener: { textLine1: 'Rügener Bankquischer', textLine2: 'Das Aufsaugwunder!' },
+};
+
 export default function Configurator() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-  const [selectedColor, setSelectedColor] = useState(colorPalette[34]); // Dunkelblau als Default
+  const [selectedColor, setSelectedColor] = useState(colorPalette[29]); // Dunkelblau als Default
   const [selectedCarabiner, setSelectedCarabiner] = useState(carabinerColors[1]); // Blau als Default
   const [textLine1, setTextLine1] = useState('');
   const [textLine2, setTextLine2] = useState('');
@@ -286,6 +287,29 @@ export default function Configurator() {
   const [companyName, setCompanyName] = useState('');
   const [quantity, setQuantity] = useState('1000');
   const [message, setMessage] = useState('');
+
+  // URL-Parameter auswerten für Presets
+  useEffect(() => {
+    const loadPreset = () => {
+      const hash = window.location.hash;
+      const match = hash.match(/konfigurator\?preset=(\w+)/);
+      if (match) {
+        const presetKey = match[1];
+        const preset = presets[presetKey];
+        if (preset) {
+          setTextLine1(preset.textLine1);
+          setTextLine2(preset.textLine2);
+        }
+      }
+    };
+
+    // Initial laden
+    loadPreset();
+
+    // Bei Hash-Änderung neu laden
+    window.addEventListener('hashchange', loadPreset);
+    return () => window.removeEventListener('hashchange', loadPreset);
+  }, []);
 
   const handleLogoUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -342,7 +366,7 @@ export default function Configurator() {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <div className="grid lg:grid-cols-[3fr_2fr] gap-12 lg:gap-16 items-start">
           {/* Live Preview */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -350,7 +374,7 @@ export default function Configurator() {
             transition={{ duration: 0.7 }}
             className="lg:sticky lg:top-8"
           >
-            <div className="bg-[#FDF8F3] rounded-2xl p-8 shadow-lg">
+            <div className="bg-[#F9F8F5] rounded-2xl p-8 shadow-lg">
               <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
                 Live-Vorschau
               </h3>
@@ -373,58 +397,11 @@ export default function Configurator() {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Farbauswahl */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  1. Farbe wählen
-                </label>
-                <div className="grid grid-cols-10 sm:grid-cols-12 gap-1.5 p-4 bg-gray-50 rounded-xl">
-                  {colorPalette.map((color) => (
-                    <button
-                      key={color.id}
-                      type="button"
-                      onClick={() => setSelectedColor(color)}
-                      className={`w-6 h-6 sm:w-7 sm:h-7 rounded-md transition-all hover:scale-110 ${
-                        selectedColor.id === color.id
-                          ? 'ring-2 ring-offset-2 ring-[#2E5A4B] scale-110'
-                          : 'ring-1 ring-gray-200'
-                      }`}
-                      style={{ backgroundColor: color.hex }}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Karabiner-Farbauswahl */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  2. Karabiner-Farbe wählen
-                </label>
-                <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-xl">
-                  {carabinerColors.map((color) => (
-                    <button
-                      key={color.id}
-                      type="button"
-                      onClick={() => setSelectedCarabiner(color)}
-                      className={`w-8 h-8 rounded-full transition-all hover:scale-110 ${
-                        selectedCarabiner.id === color.id
-                          ? 'ring-2 ring-offset-2 ring-[#2E5A4B] scale-110'
-                          : 'ring-1 ring-gray-300'
-                      }`}
-                      style={{ backgroundColor: color.hex }}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-                <p className="text-xs text-gray-500 mt-2">Gewählt: {selectedCarabiner.name}</p>
-              </div>
-
-              {/* Text Inputs */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* 1. Text Inputs */}
               <div className="space-y-4">
                 <label className="block text-sm font-semibold text-gray-900">
-                  3. Text eingeben
+                  1. Text eingeben
                 </label>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Große Schrift (Zeile 1)</label>
@@ -452,10 +429,10 @@ export default function Configurator() {
                 </div>
               </div>
 
-              {/* Logo Upload */}
+              {/* 2. Logo Upload */}
               <div>
                 <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  4. Logo hochladen
+                  2. Logo hochladen
                 </label>
                 <div className="relative">
                   <input
@@ -473,7 +450,7 @@ export default function Configurator() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                     <span className="text-gray-600">
-                      {logoFileName || 'PNG, SVG, EPS oder AI'}
+                      {logoFileName || 'PNG, SVG, EPS oder AI (Hochformat empfohlen)'}
                     </span>
                   </label>
                 </div>
@@ -485,6 +462,53 @@ export default function Configurator() {
                     {logoFileName}
                   </p>
                 )}
+              </div>
+
+              {/* 3. Farbauswahl */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  3. Farbe wählen
+                </label>
+                <div className="grid gap-1 p-3 bg-gray-50 rounded-xl" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
+                  {colorPalette.map((color) => (
+                    <button
+                      key={color.id}
+                      type="button"
+                      onClick={() => setSelectedColor(color)}
+                      className={`w-5 h-5 rounded transition-all hover:scale-110 ${
+                        selectedColor.id === color.id
+                          ? 'ring-2 ring-offset-1 ring-[#2E5A4B] scale-110'
+                          : 'ring-1 ring-gray-200'
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Karabiner-Farbauswahl */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  4. Karabiner-Farbe wählen
+                </label>
+                <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-xl">
+                  {carabinerColors.map((color) => (
+                    <button
+                      key={color.id}
+                      type="button"
+                      onClick={() => setSelectedCarabiner(color)}
+                      className={`w-7 h-7 rounded-full transition-all hover:scale-110 ${
+                        selectedCarabiner.id === color.id
+                          ? 'ring-2 ring-offset-1 ring-[#2E5A4B] scale-110'
+                          : 'ring-1 ring-gray-300'
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-2">Gewählt: {selectedCarabiner.name}</p>
               </div>
 
               <hr className="border-gray-200" />

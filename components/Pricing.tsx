@@ -4,158 +4,198 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Pricing() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-  const plans = [
+  const regionalPlans = [
     {
       name: 'Büsumer Bankquischer',
-      price: 'Auf Anfrage',
-      description: 'Das Original aus Büsum mit Garnelen-Logo. Perfekt für alle, die die Nordsee lieben.',
-      features: [
-        'Microfasertuch 20 x 30 cm',
-        'Pouch mit Karabiner',
-        'Garnelen-Logo',
-        'Made in Germany',
-        'Immer dabei',
-      ],
-      cta: 'Jetzt bestellen',
-      highlight: true,
-      comingSoon: false,
+      description: 'Das Original aus Büsum mit Garnelen-Logo.',
+      image: '/buesumer-produkt.png',
+      gradient: 'bg-[#B7EDB4]/40',
+      product: 'buesumer',
     },
     {
       name: 'Sylter Bankquischer',
-      price: 'Auf Anfrage',
-      description: 'Die Sylt-Edition mit Insel-Silhouette. Für alle Sylt-Liebhaber.',
-      features: [
-        'Microfasertuch 20 x 30 cm',
-        'Pouch mit Karabiner',
-        'Sylt-Logo',
-        'Made in Germany',
-        'Immer dabei',
-      ],
-      cta: 'Jetzt bestellen',
-      highlight: false,
-      comingSoon: false,
+      description: 'Die Sylt-Edition mit Insel-Silhouette.',
+      image: '/sylter-produkt.png',
+      gradient: 'bg-[#9BC5E3]/40',
+      product: 'sylter',
     },
     {
-      name: 'Helgoländer Bankquischer',
-      price: 'Coming Soon',
-      description: 'Die Helgoland-Edition. Für alle Inselliebhaber.',
-      features: [
-        'Microfasertuch 20 x 30 cm',
-        'Pouch mit Karabiner',
-        'Helgoland-Logo',
-        'Made in Germany',
-        'Immer dabei',
-      ],
-      cta: 'Benachrichtigen',
-      highlight: false,
-      comingSoon: true,
+      name: 'Norderneyer Bankquischer',
+      description: 'Die Norderney-Edition für Inselurlauber.',
+      image: '/nordeneyer-bankquischer.png',
+      gradient: 'bg-[#F5D6BA]/50',
+      product: 'norderneyer',
     },
     {
-      name: 'Ostsee Bankquischer',
-      price: 'Coming Soon',
-      description: 'Die Ostsee-Edition. Perfekt für Ostseeurlaub.',
-      features: [
-        'Microfasertuch 20 x 30 cm',
-        'Pouch mit Karabiner',
-        'Ostsee-Logo',
-        'Made in Germany',
-        'Immer dabei',
-      ],
-      cta: 'Benachrichtigen',
-      highlight: false,
-      comingSoon: true,
+      name: 'Rügener Bankquischer',
+      description: 'Die Rügen-Edition für Ostseefans.',
+      image: '/ruegener-bankquischer.png',
+      gradient: 'bg-[#E8D4E8]/50',
+      product: 'ruegener',
     },
   ];
 
   return (
     <section ref={ref} id="pricing" className="py-32 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <p className="text-sm uppercase tracking-wider text-gray-500 mb-4">varianten</p>
-          <h2 className="text-5xl md:text-6xl font-semibold text-gray-900 mb-4">
-            Wählen Sie Ihre
+          <p className="text-sm uppercase tracking-wider text-gray-500 mb-4">Geschäftskunden</p>
+          <h2 className="text-5xl md:text-6xl font-semibold text-gray-900 mb-6">
+            Bestelloptionen für
             <br />
-            Bankquischer-Edition
+            Geschäftskunden
           </h2>
+          <div className="inline-block bg-blue-50 border border-blue-100 rounded-full px-6 py-2">
+            <p className="text-blue-800 font-medium">
+              Mindestbestellmenge: 1.000 Stück
+            </p>
+          </div>
         </motion.div>
 
+        {/* Regionale Editionen */}
+        <div className="mb-20">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-8 text-center">Regionale Editionen</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {regionalPlans.map((plan, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -5 }}
+                className="bg-white rounded-2xl p-6 border-2 border-gray-200 space-y-4 flex flex-col"
+              >
+                {/* Product Image */}
+                <div className={`w-full aspect-square ${plan.gradient} rounded-xl flex items-center justify-center p-4 shadow-md`}>
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={plan.image}
+                      alt={plan.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-          {plans.map((plan, index) => (
+                <div className="flex-grow text-center">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{plan.name}</h3>
+                  <p className="text-gray-600 text-sm">{plan.description}</p>
+                </div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="mt-auto"
+                >
+                  <Link
+                    href={`#kontakt?product=${plan.product}`}
+                    className="block w-full text-center py-2.5 rounded-full font-medium transition-colors bg-gray-100 text-gray-900 hover:bg-gray-200 text-sm"
+                  >
+                    Jetzt anfragen
+                  </Link>
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Individualisierung */}
+        <div className="max-w-6xl mx-auto">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-8 text-center">Individuelles Design</h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Option 1: Die vier vorgedruckten */}
             <motion.div
-              key={index}
               initial={{ opacity: 1, y: 0 }}
               whileHover={{ y: -5 }}
-              className={`bg-white rounded-2xl p-8 border-2 ${
-                plan.highlight
-                  ? 'border-gray-900 shadow-xl'
-                  : plan.comingSoon
-                  ? 'border-gray-200 opacity-75'
-                  : 'border-gray-200'
-              } space-y-6 ${plan.comingSoon ? 'relative' : ''}`}
+              className="bg-white rounded-2xl p-8 border-2 border-gray-200 shadow-lg space-y-6 flex flex-col"
             >
-              {plan.comingSoon && (
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-[#D4E9F7] text-[#4A90E2] text-xs rounded-full font-medium border border-[#4A90E2]/20">
-                    Coming Soon
-                  </span>
-                </div>
-              )}
-              <div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-semibold text-gray-900">{plan.price}</span>
-                </div>
-                <p className="text-gray-600 mt-2">{plan.description}</p>
+              <div className="text-center">
+                <h4 className="text-xl font-semibold text-gray-900 mb-3">Die vier vorgedruckten</h4>
+                <p className="text-gray-600 text-sm mb-6">
+                  Wählen Sie aus unseren vier regionalen Editionen: Büsum, Sylt, Norderney oder Rügen.
+                </p>
               </div>
-
-              <ul className="space-y-3">
-                {plan.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-center gap-2 text-gray-700">
-                    <span className="w-1.5 h-1.5 bg-gray-900 rounded-full" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
               <motion.div
-                whileHover={plan.comingSoon ? {} : { scale: 1.05 }}
-                whileTap={plan.comingSoon ? {} : { scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="mt-auto"
               >
-                {plan.comingSoon ? (
-                  <div className="block w-full text-center py-4 rounded-full font-medium bg-gray-100 text-gray-400 cursor-not-allowed">
-                    {plan.cta}
-                  </div>
-                ) : (
-                  <Link
-                    href="/contact-us"
-                    className={`block w-full text-center py-4 rounded-full font-medium transition-colors ${
-                      plan.highlight
-                        ? 'bg-gray-900 text-white hover:bg-gray-800'
-                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                    }`}
-                  >
-                    {plan.cta}
-                  </Link>
-                )}
+                <Link
+                  href="#pricing"
+                  className="block w-full text-center py-3 rounded-full font-medium transition-colors bg-gray-100 text-gray-900 hover:bg-gray-200"
+                >
+                  Editionen ansehen
+                </Link>
               </motion.div>
             </motion.div>
-          ))}
+
+            {/* Option 2: Selbst konfigurieren */}
+            <motion.div
+              initial={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -5 }}
+              className="bg-white rounded-2xl p-8 border-2 border-[#2E5A4B] shadow-lg bg-gradient-to-br from-white to-[#FDF8F3] space-y-6 flex flex-col"
+            >
+              <div className="text-center">
+                <h4 className="text-xl font-semibold text-gray-900 mb-3">Selbst konfigurieren</h4>
+                <p className="text-gray-600 text-sm mb-6">
+                  Wählen Sie Farbe, Text und Logo selbst aus. Live-Vorschau inklusive.
+                </p>
+              </div>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="mt-auto"
+              >
+                <Link
+                  href="#konfigurator"
+                  className="block w-full text-center py-3 rounded-full font-medium transition-colors bg-[#2E5A4B] text-white hover:bg-[#234539] shadow-lg"
+                >
+                  Jetzt konfigurieren
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            {/* Option 3: Designen lassen */}
+            <motion.div
+              initial={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -5 }}
+              className="bg-white rounded-2xl p-8 border-2 border-gray-200 shadow-lg space-y-6 flex flex-col"
+            >
+              <div className="text-center">
+                <h4 className="text-xl font-semibold text-gray-900 mb-3">Designen lassen</h4>
+                <p className="text-gray-600 text-sm mb-6">
+                  Lassen Sie sich von uns ein individuelles Design erstellen. Wir beraten Sie gerne.
+                </p>
+              </div>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="mt-auto"
+              >
+                <Link
+                  href="#kontakt"
+                  className="block w-full text-center py-3 rounded-full font-medium transition-colors bg-gray-100 text-gray-900 hover:bg-gray-200"
+                >
+                  Design anfragen
+                </Link>
+              </motion.div>
+            </motion.div>
+          </div>
         </div>
 
         <motion.div
           initial={{ opacity: 1 }}
           className="text-center mt-16"
         >
-          <p className="text-gray-500 text-sm uppercase tracking-wider mb-8">
+          <p className="text-gray-500 text-sm uppercase tracking-wider">
             Immer dabei - trocken sitzt's sich besser!
           </p>
         </motion.div>
