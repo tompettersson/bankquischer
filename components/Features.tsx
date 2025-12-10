@@ -101,7 +101,7 @@ export default function Features() {
                   whileTap={{ scale: 0.95 }}
                   className="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 text-white rounded-full text-sm sm:text-base font-medium hover:bg-gray-800 transition-colors"
                 >
-                  Jetzt bestellen
+                  Jetzt anfragen
                 </motion.a>
               </motion.div>
             </div>

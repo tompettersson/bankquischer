@@ -303,7 +303,8 @@ export default function Hero() {
       </motion.div>
 
       {/* Floating Cards - Desktop: Absolute positioned */}
-      <div className="absolute inset-0 pointer-events-none hidden lg:block">
+      {/* Hidden on screens smaller than 1536px (2xl) to prevent overlap with center content */}
+      <div className="absolute inset-0 pointer-events-none hidden 2xl:block">
         {floatingCards.map((card) => (
           <motion.div
             key={card.id}
@@ -330,14 +331,14 @@ export default function Hero() {
         ))}
       </div>
 
-      {/* Mobile/Tablet: Cards stacked vertically */}
-      <div className="lg:hidden max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8 space-y-6 sm:space-y-8 relative z-10">
-        {/* Weather Icons Row - Mobile/Tablet */}
+      {/* Mobile/Tablet/Laptop: Cards layout (shown until 2xl breakpoint) */}
+      <div className="2xl:hidden max-w-6xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8 relative z-10">
+        {/* Weather Icons Row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex items-center justify-center gap-6 sm:gap-8"
+          className="flex items-center justify-center gap-6 sm:gap-8 mb-6 sm:mb-8"
         >
           {weatherIcons.map((weather) => (
             <motion.div
@@ -351,106 +352,112 @@ export default function Hero() {
           ))}
         </motion.div>
 
-        {/* Lifestyle Card - Mobile/Tablet */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex justify-center"
-        >
-          <div className="relative w-full max-w-xs sm:max-w-sm h-64 sm:h-80 rounded-2xl overflow-hidden shadow-lg">
-            <Image
-              src="/an-hose.jpg"
-              alt="Bankquischer an der Hose"
-              fill
-              sizes="(max-width: 640px) 100vw, 384px"
-              className="object-cover"
-            />
-            <div className="absolute bottom-3 left-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg p-2 sm:p-3">
-              <p className="text-sm sm:text-base font-medium text-gray-900">Immer griffbereit</p>
+        {/* Grid Layout for lg+ screens, stacked for smaller */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+          {/* Lifestyle Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex justify-center"
+          >
+            <div className="relative w-full max-w-xs sm:max-w-sm lg:max-w-none h-64 sm:h-80 lg:h-72 rounded-2xl overflow-hidden shadow-lg">
+              <Image
+                src="/an-hose.jpg"
+                alt="Bankquischer an der Hose"
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 384px, 33vw"
+                className="object-cover"
+              />
+              <div className="absolute bottom-3 left-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg p-2 sm:p-3">
+                <p className="text-sm sm:text-base font-medium text-gray-900">Immer griffbereit</p>
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Review Stars - Mobile/Tablet */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="flex justify-center"
-        >
-          <div className="bg-white px-6 sm:px-8 py-3 sm:py-4 rounded-full flex items-center gap-1 sm:gap-2 shadow-lg">
-            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
-            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
-            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
-            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
-            <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
-          </div>
-        </motion.div>
-
-        {/* Product Specs - Mobile/Tablet */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="flex justify-center"
-        >
-          <div className="relative w-full max-w-md sm:max-w-lg rounded-2xl overflow-hidden shadow-lg" style={{ aspectRatio: '16/9' }}>
-            <Image
-              src="/tuch.tisch.jpg"
-              alt="Bankquischer Tuch"
-              fill
-              sizes="(max-width: 640px) 100vw, 576px"
-              className="object-cover"
-            />
-            <div className="absolute bottom-3 left-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg p-3 sm:p-4">
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base">
-                <div>
-                  <p className="font-semibold text-gray-900">20 x 30 cm</p>
-                  <p className="text-gray-600">Kompaktformat</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Microfaser</p>
-                  <p className="text-gray-600">Ultra-saugfähig</p>
+          {/* Product Specs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="flex justify-center"
+          >
+            <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-none h-64 sm:h-72 lg:h-72 rounded-2xl overflow-hidden shadow-lg">
+              <Image
+                src="/tuch.tisch.jpg"
+                alt="Bankquischer Tuch"
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 576px, 33vw"
+                className="object-cover"
+              />
+              <div className="absolute bottom-3 left-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg p-3 sm:p-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base">
+                  <div>
+                    <p className="font-semibold text-gray-900">20 x 30 cm</p>
+                    <p className="text-gray-600">Kompaktformat</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Microfaser</p>
+                    <p className="text-gray-600">Ultra-saugfähig</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Absorbency Card - Mobile/Tablet */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.7 }}
-          className="flex justify-center"
-        >
-          <div className="bg-[#FFDB65] p-4 sm:p-6 rounded-3xl w-full max-w-sm">
-            <p className="text-gray-600 text-sm sm:text-base font-medium mb-3 sm:mb-4">Saugstärke</p>
-            <div className="flex items-end gap-2 sm:gap-3">
-              <span className="text-4xl sm:text-5xl font-semibold text-gray-900">500%</span>
-              <div className="mb-1">
-                <p className="text-gray-900 text-sm sm:text-base font-medium">mehr als</p>
-                <p className="text-gray-900 text-sm sm:text-base font-medium">Baumwolle</p>
+          {/* Absorbency Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="flex justify-center lg:col-span-2 xl:col-span-1"
+          >
+            <div className="bg-[#FFDB65] p-4 sm:p-6 rounded-3xl w-full max-w-sm lg:max-w-md xl:max-w-none">
+              <p className="text-gray-600 text-sm sm:text-base font-medium mb-3 sm:mb-4">Saugstärke</p>
+              <div className="flex items-end gap-2 sm:gap-3">
+                <span className="text-4xl sm:text-5xl font-semibold text-gray-900">500%</span>
+                <div className="mb-1">
+                  <p className="text-gray-900 text-sm sm:text-base font-medium">mehr als</p>
+                  <p className="text-gray-900 text-sm sm:text-base font-medium">Baumwolle</p>
+                </div>
+              </div>
+              <div className="mt-3 sm:mt-4 inline-block bg-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full">
+                <p className="text-xs sm:text-sm font-semibold text-gray-900">Microfaser-Technologie</p>
               </div>
             </div>
-            <div className="mt-3 sm:mt-4 inline-block bg-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full">
-              <p className="text-xs sm:text-sm font-semibold text-gray-900">Microfaser-Technologie</p>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
-        {/* Product Slider - Mobile/Tablet */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="flex justify-center pb-6 sm:pb-8"
-        >
-          <div className="relative w-full max-w-xs sm:max-w-sm h-80 sm:h-96 overflow-visible">
-            <ProductSlider isMobile={true} />
-          </div>
-        </motion.div>
+        {/* Second Row: Review Stars and Product Slider */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mt-6 lg:mt-8">
+          {/* Review Stars */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+            className="flex justify-center items-center"
+          >
+            <div className="bg-white px-6 sm:px-8 py-3 sm:py-4 rounded-full flex items-center gap-1 sm:gap-2 shadow-lg">
+              <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+              <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+              <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+              <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+              <span className="text-2xl sm:text-3xl text-[#FFDB65]">★</span>
+            </div>
+          </motion.div>
+
+          {/* Product Slider */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+            className="flex justify-center pb-6 sm:pb-8"
+          >
+            <div className="relative w-full max-w-xs sm:max-w-sm lg:max-w-md h-80 sm:h-96 lg:h-80 overflow-visible">
+              <ProductSlider isMobile={true} />
+            </div>
+          </motion.div>
+        </div>
       </div>
 
       {/* Slogan - Centered at bottom */}

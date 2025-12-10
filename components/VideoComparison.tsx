@@ -75,7 +75,7 @@ export default function VideoComparison() {
             <div className="text-center space-y-2">
               <h3 className="text-xl font-semibold text-gray-900">Der Bankquischer</h3>
               <p className="text-gray-600">
-                Saugt das Wasser blitzschnell auf - ein Wisch und die Bank ist trocken.
+                Saugt das Wasser blitzschnell auf - die Bank ist nun sauber und trocken.
                 Einfach auswringen und wieder verwenden.
               </p>
             </div>

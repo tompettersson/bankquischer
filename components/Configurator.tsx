@@ -87,13 +87,15 @@ function BankquischerPreview({
   textLine1,
   textLine2,
   logoUrl,
-  carabinerColor
+  carabinerColor,
+  showBack = false
 }: {
   color: string;
   textLine1: string;
   textLine2: string;
   logoUrl: string | null;
   carabinerColor: string;
+  showBack?: boolean;
 }) {
   // Paddings für Text und Logo innerhalb der Hauptfläche
   // Hauptfläche: x=350.4 bis 1769.3 (Breite ~1419), y=274.9 bis 1280 (Höhe ~1005)
@@ -114,6 +116,83 @@ function BankquischerPreview({
   const textBlockHeight = 600; // geschätzte Höhe des Textblocks
   const textY = mainAreaY + (mainAreaHeight - textBlockHeight) / 2;
   const textMaxWidth = 1000; // Feste maximale Breite für Text, damit Überschrift richtig umbricht
+
+  // Rückseite: 180° gedreht mit URL zentriert
+  if (showBack) {
+    return (
+      <svg
+        viewBox="0 0 2270.1 1536"
+        className="w-full h-auto"
+        style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.15))' }}
+      >
+        <defs>
+          <style>
+            {`
+              .st0-back {
+                fill: none;
+                stroke-dasharray: 12;
+                stroke-width: 4px;
+                stroke: #1c1b1b;
+                stroke-miterlimit: 10;
+              }
+              .st1-back {
+                fill: ${color};
+                stroke: #1c1b1b;
+                stroke-width: 7px;
+                stroke-miterlimit: 10;
+              }
+            `}
+          </style>
+        </defs>
+
+        {/* Gesamte Gruppe 180° um Mittelpunkt gedreht */}
+        <g transform="rotate(180 1135 768)">
+          {/* Obere Lasche */}
+          <rect className="st1-back" x="794.7" y="76.4" width="276.8" height="198.4"/>
+
+          {/* Untere Lasche */}
+          <rect className="st1-back" x="794.7" y="1280" width="276.8" height="198.4"/>
+
+          {/* Linke Lasche (rotiert) */}
+          <rect
+            className="st1-back"
+            x="112.8"
+            y="678.2"
+            width="276.8"
+            height="198.4"
+            transform="translate(-526.3 1028.6) rotate(-90)"
+          />
+
+          {/* Gestrichelte Faltlinien */}
+          <line className="st0-back" x1="350.4" y1="671.8" x2="151.9" y2="671.8"/>
+          <line className="st0-back" x1="350.4" y1="887.8" x2="151.9" y2="887.8"/>
+          <line className="st0-back" x1="1041.1" y1="274.9" x2="1041.1" y2="76.4"/>
+          <line className="st0-back" x1="825.1" y1="274.9" x2="825.1" y2="76.4"/>
+          <line className="st0-back" x1="1041.1" y1="1478.4" x2="1041.1" y2="1280"/>
+          <line className="st0-back" x1="825.1" y1="1478.4" x2="825.1" y2="1280"/>
+
+          {/* Hauptfläche mit abgerundeten Ecken und Druckknopf */}
+          <path
+            className="st1-back"
+            d="M1769.3,274.9H350.4v1005.1h1418.9s307.3-269.3,307.3-269.3v-468.5s-307.3-267.3-307.3-267.3ZM1940.9,834.7c-37.8,0-68.5-30.7-68.5-68.5s30.7-68.5,68.5-68.5,68.5,30.7,68.5,68.5-30.7,68.5-68.5,68.5Z"
+          />
+        </g>
+
+        {/* URL Text zentriert (nicht gedreht, damit lesbar) */}
+        <text
+          x="1060"
+          y="780"
+          textAnchor="middle"
+          fill="white"
+          fontSize="80"
+          fontFamily="Arial, sans-serif"
+          fontWeight="normal"
+        >
+          www.bankquischer.de
+        </text>
+      </svg>
+    );
+  }
 
   return (
     <svg
@@ -245,18 +324,6 @@ function BankquischerPreview({
             }}>
               {textLine2 || 'Das Aufsaugwunder!'}
             </div>
-
-            {/* Feste URL unten - 30% kleiner */}
-            <div style={{
-              fontSize: "67px",
-              fontFamily: "Arial, sans-serif",
-              lineHeight: "1.2",
-              wordWrap: "break-word",
-              overflowWrap: "break-word",
-              maxWidth: `${textMaxWidth}px`
-            }}>
-              www.bankquischer.de
-            </div>
           </div>
         </foreignObject>
 
@@ -287,6 +354,7 @@ export default function Configurator() {
   const [companyName, setCompanyName] = useState('');
   const [quantity, setQuantity] = useState('1000');
   const [message, setMessage] = useState('');
+  const [showBackSide, setShowBackSide] = useState(false);
 
   // URL-Parameter auswerten für Presets
   useEffect(() => {
@@ -375,18 +443,45 @@ export default function Configurator() {
             className="lg:sticky lg:top-8"
           >
             <div className="bg-[#F9F8F5] rounded-2xl p-8 shadow-lg">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
-                Live-Vorschau
-              </h3>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Live-Vorschau
+                </h3>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowBackSide(false)}
+                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                      !showBackSide
+                        ? 'bg-[#2E5A4B] text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Vorderseite
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowBackSide(true)}
+                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                      showBackSide
+                        ? 'bg-[#2E5A4B] text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Rückseite
+                  </button>
+                </div>
+              </div>
               <BankquischerPreview
                 color={selectedColor.hex}
                 textLine1={textLine1}
                 textLine2={textLine2}
                 logoUrl={logoUrl}
                 carabinerColor={selectedCarabiner.hex}
+                showBack={showBackSide}
               />
               <p className="text-center text-gray-500 text-sm mt-4">
-                Farbe: {selectedColor.name}
+                Farbe: {selectedColor.name} • {showBackSide ? 'Rückseite' : 'Vorderseite'}
               </p>
             </div>
           </motion.div>

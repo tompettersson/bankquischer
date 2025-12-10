@@ -20,7 +20,7 @@ export default function CTA() {
             Bereit für trockene Bänke?
           </h2>
           <p className="text-xl text-gray-300">
-            Bestellen Sie jetzt Ihren Bankquischer und genießen Sie trockenes Sitzen - immer und überall.
+            Fragen Sie jetzt Ihren Bankquischer an und genießen Sie trockenes Sitzen - immer und überall.
           </p>
           <motion.div
             initial={{ opacity: 1, y: 0 }}
@@ -31,7 +31,7 @@ export default function CTA() {
               href="#pricing"
               className="inline-block px-8 py-4 bg-white text-gray-900 rounded-full font-medium text-lg hover:bg-gray-100 transition-colors"
             >
-              Jetzt bestellen
+              Jetzt anfragen
             </Link>
           </motion.div>
         </motion.div>

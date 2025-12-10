@@ -124,7 +124,8 @@ export default function MoreFeatures() {
             </h3>
             <p className="text-lg text-gray-600">
               Der praktische Karabinerhaken macht den Bankquischer zum perfekten Begleiter für unterwegs.
-              Befestigen Sie ihn einfach und schnell überall dort, wo Sie ihn brauchen:
+              Neben der Lasche mit Karabiner befinden sich drei weitere Laschen an jeder Seite der Pouch –
+              so ergeben sich vielfältige Befestigungsmöglichkeiten. Hängen Sie ihn einfach dort auf, wo Sie ihn brauchen:
             </p>
             <ul className="grid grid-cols-2 gap-3 text-gray-700">
               <li className="flex items-center gap-2">
