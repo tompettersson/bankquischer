@@ -124,7 +124,7 @@ export default function MoreFeatures() {
             </h3>
             <p className="text-lg text-gray-600">
               Der praktische Karabinerhaken macht den Bankquischer zum perfekten Begleiter für unterwegs.
-              Neben der Lasche mit Karabiner befinden sich drei weitere Laschen an jeder Seite der Pouch –
+              Die Pouch hat vier Laschen – links, oben, unten und rechts (mit Karabiner) –
               so ergeben sich vielfältige Befestigungsmöglichkeiten. Hängen Sie ihn einfach dort auf, wo Sie ihn brauchen:
             </p>
             <ul className="grid grid-cols-2 gap-3 text-gray-700">
