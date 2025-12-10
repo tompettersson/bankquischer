@@ -248,8 +248,8 @@ export default function Hero() {
 
       {/* Floating Cards - Desktop: Absolute positioned with edge-aware positioning */}
       {/* Cards sind näher am Rand bei kleineren Screens, mehr zur Mitte bei größeren */}
-      {/* Sichtbar ab lg (1024px) */}
-      <div className="absolute inset-0 pointer-events-none hidden lg:block">
+      {/* Sichtbar ab xl (1280px) */}
+      <div className="absolute inset-0 pointer-events-none hidden xl:block">
         {/* Lifestyle Card - Links oben */}
         <FloatingCard
           id="lifestyle-left"
@@ -381,8 +381,8 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Mobile/Tablet: Cards layout (hidden on lg+ where floating cards are shown) */}
-      <div className="lg:hidden max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8 relative z-10 space-y-6 sm:space-y-8">
+      {/* Mobile/Tablet/Laptop: Cards layout (hidden on xl+ where floating cards are shown) */}
+      <div className="xl:hidden max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8 relative z-10 space-y-6 sm:space-y-8">
         {/* Weather Icons Row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
