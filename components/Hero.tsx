@@ -253,7 +253,7 @@ export default function Hero() {
         {/* Lifestyle Card - Links oben */}
         <FloatingCard
           id="lifestyle-left"
-          leftPos="clamp(1rem, calc(50vw - 580px), 18%)"
+          leftPos="clamp(0.5rem, calc(50vw - 440px), 18%)"
           topPos="28%"
           delay={0.2}
         >
@@ -274,7 +274,7 @@ export default function Hero() {
         {/* Review Stars - Links mitte */}
         <FloatingCard
           id="review"
-          leftPos="clamp(1rem, calc(50vw - 540px), 20%)"
+          leftPos="clamp(0.5rem, calc(50vw - 460px), 20%)"
           topPos="62%"
           delay={0.3}
         >
@@ -290,7 +290,7 @@ export default function Hero() {
         {/* Product Specs - Rechts oben */}
         <FloatingCard
           id="product-specs"
-          rightPos="clamp(1rem, calc(50vw - 620px), 16%)"
+          rightPos="clamp(0.5rem, calc(50vw - 480px), 16%)"
           topPos="26%"
           delay={0.4}
         >
@@ -320,7 +320,7 @@ export default function Hero() {
         {/* Absorbency Card - Links unten */}
         <FloatingCard
           id="absorbency"
-          leftPos="clamp(1rem, calc(50vw - 600px), 16%)"
+          leftPos="clamp(0.5rem, calc(50vw - 460px), 16%)"
           bottomPos="22%"
           delay={0.5}
         >
@@ -342,7 +342,7 @@ export default function Hero() {
         {/* Product Slider - Rechts unten */}
         <FloatingCard
           id="product-slider"
-          rightPos="clamp(1rem, calc(50vw - 560px), 14%)"
+          rightPos="clamp(0.5rem, calc(50vw - 420px), 14%)"
           bottomPos="18%"
           delay={0.6}
         >
@@ -355,7 +355,7 @@ export default function Hero() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.7 }}
           className="absolute"
-          style={{ left: 'clamp(0.5rem, calc(50vw - 620px), 12%)', top: '20%' }}
+          style={{ left: 'clamp(0.5rem, calc(50vw - 480px), 12%)', top: '20%' }}
         >
           <Sun className="w-10 xl:w-14 h-10 xl:h-14 text-[#FFDB65]" />
         </motion.div>
@@ -365,7 +365,7 @@ export default function Hero() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
           className="absolute"
-          style={{ right: 'clamp(0.5rem, calc(50vw - 660px), 12%)', top: '16%' }}
+          style={{ right: 'clamp(0.5rem, calc(50vw - 520px), 12%)', top: '16%' }}
         >
           <CloudRain className="w-12 xl:w-16 h-12 xl:h-16 text-[#9BC5E3]" />
         </motion.div>
@@ -375,7 +375,7 @@ export default function Hero() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.9 }}
           className="absolute"
-          style={{ left: 'clamp(0.5rem, calc(50vw - 640px), 10%)', bottom: '35%' }}
+          style={{ left: 'clamp(0.5rem, calc(50vw - 500px), 10%)', bottom: '35%' }}
         >
           <Leaf className="w-10 xl:w-14 h-10 xl:h-14 text-[#B7EDB4]" />
         </motion.div>
