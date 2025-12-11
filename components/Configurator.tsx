@@ -5,7 +5,7 @@ import { useInView } from 'framer-motion';
 import { useRef, useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 
-// Farbpaletten basierend auf den Stoffmustern (ohne zu helle Farben für weiße Schrift)
+// Farbpaletten basierend auf den Stoffmustern (inkl. helle Farben für schwarze Schrift)
 const colorPalette = [
   // Rot/Pink Töne (Reihe 1)
   { id: 1, name: 'Dunkelrot', hex: '#8B1538' },
@@ -61,8 +61,17 @@ const colorPalette = [
   { id: 44, name: 'Grasgrün', hex: '#7CB342' },
   { id: 45, name: 'Aqua', hex: '#4FC3F7' },
   { id: 46, name: 'Azur', hex: '#29B6F6' },
-  // Schwarz
+  // Schwarz & Weiß
   { id: 47, name: 'Schwarz', hex: '#000000' },
+  { id: 48, name: 'Weiß', hex: '#FFFFFF' },
+  { id: 49, name: 'Creme', hex: '#FFFDD0' },
+  { id: 50, name: 'Elfenbein', hex: '#FFFFF0' },
+];
+
+// Schriftfarben (Schwarz und Weiß)
+const textColors = [
+  { id: 1, name: 'Weiß', hex: '#FFFFFF' },
+  { id: 2, name: 'Schwarz', hex: '#000000' },
 ];
 
 // Karabiner-Farben basierend auf dem Bild
@@ -79,6 +88,63 @@ const carabinerColors = [
   { id: 10, name: 'Rot', hex: '#F44336' },
 ];
 
+// Hilfsfunktion: Hex zu RGB
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : { r: 0, g: 0, b: 0 };
+}
+
+// Hilfsfunktion: RGB zu Hex
+function rgbToHex(r: number, g: number, b: number): string {
+  return '#' + [r, g, b].map(x => {
+    const hex = Math.max(0, Math.min(255, Math.round(x))).toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
+}
+
+// Hilfsfunktion: Farbe aufhellen/abdunkeln basierend auf Faktor (0-1 für dunkel, 1+ für hell)
+function adjustColor(hex: string, factor: number): string {
+  const rgb = hexToRgb(hex);
+  if (factor < 1) {
+    // Abdunkeln
+    return rgbToHex(rgb.r * factor, rgb.g * factor, rgb.b * factor);
+  } else {
+    // Aufhellen (Richtung Weiß)
+    const f = factor - 1;
+    return rgbToHex(
+      rgb.r + (255 - rgb.r) * f,
+      rgb.g + (255 - rgb.g) * f,
+      rgb.b + (255 - rgb.b) * f
+    );
+  }
+}
+
+// Karabiner-Farbvarianten generieren
+// S-Körper = Karabiner-Farbe mit Schattierungen (aufgehellt, da Original fast schwarz war)
+// Federdrähte = Silber/Metall (unverändert)
+function getCarabinerColors(baseColor: string) {
+  return {
+    // S-KÖRPER - deutlich aufgehellt, damit die Farbe sichtbar ist
+    veryDark: adjustColor(baseColor, 0.6),     // Schatten
+    dark: adjustColor(baseColor, 0.75),        // Dunkle Bereiche
+    mediumDark: adjustColor(baseColor, 0.9),   // Mittel-dunkel
+    medium: baseColor,                          // Hauptfarbe
+    mediumLight: adjustColor(baseColor, 1.15), // Leicht aufgehellt
+    highlight: adjustColor(baseColor, 1.3),    // Highlights
+
+    // FEDERDRÄHTE (metallisch - bleiben silber/grau)
+    metalDark: '#70716e',
+    metalMedium: '#868580',
+    metalMediumLight: '#797975',
+    metalHighlight: '#a4a3a1',
+    metalBright: '#e3e3de',
+  };
+}
+
 // SVG basierend auf dem Original bankquischer-tz.svg
 // ViewBox: 0 0 2270.1 1536
 // Hauptfläche: von x=350.4 bis x=1769.3, y=274.9 bis y=1280 (Höhe ~1005.1)
@@ -88,6 +154,7 @@ function BankquischerPreview({
   textLine2,
   logoUrl,
   carabinerColor,
+  textColor,
   showBack = false
 }: {
   color: string;
@@ -95,6 +162,7 @@ function BankquischerPreview({
   textLine2: string;
   logoUrl: string | null;
   carabinerColor: string;
+  textColor: string;
   showBack?: boolean;
 }) {
   // Paddings für Text und Logo innerhalb der Hauptfläche
@@ -103,16 +171,16 @@ function BankquischerPreview({
   const mainAreaY = 274.9;
   const mainAreaWidth = 1418.9;
   const mainAreaHeight = 1005.1;
-  const padding = 80; // Padding zum Rand
-  
-  // Logo-Bereich (links) - Hochformat 9:16, vertikal zentriert
+  const padding = 40; // Weniger Padding zum Rand
+
+  // Logo-Bereich (links) - Hochformat 9:16, vertikal zentriert, größer
   const logoX = mainAreaX + padding;
-  const logoWidth = 280;
-  const logoHeight = 498; // 280 * (16/9) ≈ 498 für 9:16 Hochformat
+  const logoWidth = 390;
+  const logoHeight = 530;
   const logoY = mainAreaY + (mainAreaHeight - logoHeight) / 2; // vertikal zentriert
-  
+
   // Text-Bereich (rechts vom Logo) - mit limitierter Breite für Umbrüche, vertikal zentriert
-  const textX = logoX + logoWidth + 60; // 60px Abstand zwischen Logo und Text
+  const textX = logoX + logoWidth + 40; // Gleicher Abstand wie links zum Rand
   const textBlockHeight = 600; // geschätzte Höhe des Textblocks
   const textY = mainAreaY + (mainAreaHeight - textBlockHeight) / 2;
   const textMaxWidth = 1000; // Feste maximale Breite für Text, damit Überschrift richtig umbricht
@@ -291,10 +359,173 @@ function BankquischerPreview({
           </g>
         )}
 
+        {/* === S-KARABINER ILLUSTRATION (unten links in der Ecke, liegend) === */}
+        {(() => {
+          const cc = getCarabinerColors(carabinerColor);
+          return (
+            <g transform="translate(1500, 1150) scale(0.46)">
+              <g>
+                {/* st3 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1392.9,602.3c-2.1,1-5.2.2-6,4-1.8.3-4.6-.5-6,0v-6c121.5-54.3,167.6-203.3,116.4-323.4s-239.4-214.2-349.4-102.7c-56.1,56.9-109.8,122.6-163.9,182.1-82.3,90.4-164,181.3-246,272-16.3,18-34.4,34.6-49,54l22,2c-65.8,3.3-132.1-1.7-198,0-9.9.3-25-2.1-33.1,3.9-11.5,8.6-6,24.4,8,26.1s38.1-.4,55,0,1.3,0,2,0,1.3,0,2,0c1.1,0,4.5,1.9,8,2,5,.1,11-2,12-2,4,.1,8-.1,12,0,12,.4,25.7,1.2,38,2s28.2.8,34,6l-27,34c-28,40.1-71.4,37.5-115.9,40.1-128,7.3-234.2,13.7-343.7-62.5C-120,536.1-15.4,98.4,324.9,46.3v6c-28.7,3.6-57.7,13.4-84,24s-62.5,27.2-86,50c-10.5,6.7-16.4,10.9-26,20C-13.3,280.9-5.6,521.1,125.9,660.4c111.4,118,255.3,125,408,108,24-2.7,52.1-6,68-26l15-20c-34.7,3.6-75.2-6.4-109.1-2.1-6,.8-7.9,4.6-12.3,5.7-42.9,10.1-47.6-58.5-1.7-51.5,21.5,3.3,43.9,5.3,66,6,32.2,1,64.9,0,97.1-1.1,109.3-119.5,216-241.3,325-361s154.4-184,220.3-211.7c92-38.7,210.9-.1,275.7,71.7,124,137.3,80.9,345.3-85,424Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1048.9,48.3c14.7-.1,47.3-1,60.6,2s34.6,5.5,52.4,6.1,22.4-6.4,33,4.8c11.9,12.4,5.1,30.2-2.3,42.7-6.8.6-13.8.5-20.7.3-19.3-.5-33.2-6-50-8-35.1-4.2-78.7-2.5-115.1-3.9-5.3-.2-9.8-.7-15-2l-4.1,1.9c-44.6,51.3-90.1,101.9-135.8,152.2-108.3,119.1-216.3,239.3-327,356l-2-2c4.4-6,8.4-14.6,15-22,124.8-141.4,255.7-277.9,382.1-417.9,10.6-11.7,20.8-24,31-36l-201.1-5.9c-37.7-3.7-76-4.1-113.9-6.1-37-2-87.5-12-123-4l-6-6c50.2-22.3,100.7-16.5,155.1-17.9,156.4-4.2,327.1-2.9,482.9,7.9,12.5.9,42.6,12.5,44-9.1,1.3-20-30.1-17.9-42-18.9-151.9-12.3-316.2-13.5-468.9-9.9-86.4,2-133.2-5.5-213.1,33.9v-6c1.8-.9,9.9-6.2,10-7-1.5-1.9-3.4-3.2-5.3-4.7-26.9-20.4-111.4-20.5-144.7-16.3v-6c39-6,91.1-6.6,129.1,5.9,8.3,2.7,25.9,15.8,30,16.1s27.8-10.6,35.3-12.6c40.9-10.7,88.4-8.1,130.6-9.4,74.9-2.2,151-4.4,225.8,0,48-2.7,96.8,5.8,144.2,0C1047.8-.2,1097.1,6.1,1144.3,3l2.6,1.3v6c-23.6,1.5-67,1-87,10s-22.3,19.7-32.9,29.1c6.5,3.9,16.9-1,22-1ZM864.9,88.3c-67.7-1.5-136.1-3.6-204-2-11.7.3-24.1,1.5-36,2-32.8,1.3-65.9.9-98,8-.5,3.5,4.5,1.9,7,2,28.6,1.1,56.5,2.3,85,4,92.8,5.4,185,9.5,278,12,19.7.5,39.3,1.6,59,2,7-.2,9-9.8,11-12,4.1-4.3,11.1-8.1,14-14-38.6-.8-77.4-1.2-116-2ZM514.9,99.3h-2c.7,1.3,1.3,1.3,2,0Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1644.9,352.3c0,.4-1.4.9-1.4,1.6,0,1.6,1.3,2.3,1.4,2.4,3.5,103.7-25.5,186.2-92,264-3.9-.7-4.7.1-4,4-.2.2.5,2.3-.5,3.4-82.2,90.6-228.6,143.7-349.5,113.6-15.4-3.8-21.9-13.6-35.9-17.1.2-.4,0-1.3,0-2,.3-1.9-.1-4.1,0-6-3.8-.9-7.7,1.8-11.1,1.7s-2.7-1.7-2.9-1.7c20.6-7.2,40.2-16,60-25.1,2.1-1,4.9-.4,6-.9.9,9-21.8,7.6-20,15,8.4,7.7,20.3,10.6,31.3,12.7,124.1,24.3,252.6-25.5,334.7-117.7.5-.5.6.7,4-4s5.8-8.4,8-12c2-.7,2.8-2.4,4-4,26.3-36.7,42.4-82.3,52-126,13.3-60.1,14-109.8-1-170-35.8-144.1-164.7-259.4-313-274-39.4-10.5-124-2.7-168,0v-6l104-4c.3,3,5.7,3,6,0,200.9-8.8,377.9,151,388,352Z"/>
+                {/* st16 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M840.9,722.3c-12.6-.1-25.4.2-38,0-47.3-.8-96.1-5.4-144-4h-4s0,4,0,4c-1-.4-3.5.4-4,0-5.8-5.2-23-5.3-34-6,1.7-4.1,1.7-7.9,0-12,73.9,2.1,148.1,3.3,222,4l2,14Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1044.9,722.3c1.1,6.1-3.1,3.8-6.9,4-24.2,1-48.8-.1-73.1,0s-21.4,0-32,0l8,8c-11.3-.5-22.4-1.8-34-2,1.1-6.1-3.1-3.8-6.9-4-8.7-.4-17,1.8-23.1,2-24.7.7-49.7-3.5-74-4v-4c12.6.2,25.4-.1,38,0,18,.2,36,0,54,0,39.3.2,78.7.5,118,0,10.6-.1,21.4.2,32,0Z"/>
+                {/* st22 - Körper dunkel */}
+                <path fill={cc.dark} d="M802.9,726.3c-4,0-10.7,0-15,0h-92c-8.8,0-27.8-1-37-2v-6c47.9-1.4,96.7,3.2,144,4v4Z"/>
+                {/* st22 - Körper dunkel */}
+                <path fill={cc.dark} d="M1162.9,724.3c-1.4,3-16.7,9.4-20.4,10.6-40.3,12.6-85.8,5.7-127.6,3.4v-6c56.2,2.5,84.4,6.9,140-8l1,2,1-2c1-.2,3.2-3.2,6-2,0,.7.2,1.6,0,2Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1014.9,738.3c-23.3-1.2-46.7-3-70-4v-4c6.6-.1,13.3.1,20,0,17.2-.3,33,1.2,50,2v6Z"/>
+                {/* st22 - Körper dunkel */}
+                <path fill={cc.dark} d="M964.9,730.3c-6.7.1-13.4-.1-20,0v4c-1.3,0-2.7,0-4,0l-8-8c10.6,0,21.3,0,32,0v4Z"/>
+                {/* st22 - Körper dunkel */}
+                <path fill={cc.dark} d="M906.9,732.3c-9.7-.2-21.5,1.8-30-2,6.1-.2,14.3-2.4,23.1-2s8-2.1,6.9,4Z"/>
+                {/* st3 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M658.9,724.3c-2-.2-2.9-1.6-4-2v-4s4,0,4,0v6Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1250.9.3h6c-.3,3-5.7,3-6,0Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1644.9,356.3c0-.1-1.3-.8-1.4-2.4s1.4-1.2,1.4-1.6l2,1-2,3Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1552.9,620.3c-.5.5.5,3.5,0,4s-3.5-.4-4,0c-.7-3.9.1-4.7,4-4Z"/>
+                {/* st14 - Körper dunkel */}
+                <path fill={cc.dark} d="M1620.9,452.3c-7.1,41.4-25.4,91.5-46,128-.8,1.4-1.4,3-2,4-2.2,3.6-5.5,8.5-8,12-3.8-.7-4.6.2-4,4-82.1,92.2-210.6,142-334.7,117.7-11-2.1-22.9-5-31.3-12.7-1.8-7.4,20.9-6,20-15,1.3-.6,2.7-1.3,4-2,2.3,4.8,7.7-1,12-2s6.9.5,10,0v-2c-1.5,0-2.9-1.1-4-2,1.4-.6,2.6-1.5,4-2,5.4-1.9,15.3-7.6,19.2-8,6.4-.6,9.9,3.7,15.8,4.1,22.2,1.7,19.8-15.3,28.1-28.1s30.9-29.6,50.9-24.1l-4-6c8.9-.9,16.9-5,25.2-7.9s4.5-4,4.8-4.1c1.4-.5,4.2.3,6,0,3.1-.5,6.8.3,10,0l-4-4c166-78.7,209.1-286.7,85-424-64.8-71.8-183.8-110.4-275.7-71.7-65.9,27.7-168.7,155-220.3,211.7-108.9,119.7-215.7,241.5-325,361-32.2,1-64.8,2.1-97.1,1.1-22.1-.7-44.5-2.7-66-6-45.9-7-41.2,61.6,1.7,51.5s6.3-4.9,12.3-5.7c33.9-4.3,74.4,5.7,109.1,2.1l-15,20c-15.9,19.9-44.1,23.3-68,26-152.7,17-296.6,10.1-408-108C-5.6,521.1-13.3,280.9,128.9,146.3l24.7-15.9c1.9-.7,1.1-3.9,1.3-4.1,22.2-14.2,62.2-35.2,86-44,49.8-18.4,118.2-23.8,170.4-15.4s32,5.8,43.6,15.4c-.2,0,.5,3-1.4,4-7.1,3.8-43.7,23.1-48.1,23.7s-19.1-7.7-27.5-7.7-16.2,3.6-21.3,6.7c-14.4,8.8-15.7,29.6-26.7,39.3-11.2,10-43.1,16.8-58.4,23.6-40.5,18-81.8,60.2-106.6,96.4-5.7-1.1-5.9,6.4-8,10s-4.2,6.6-6,10l-8.9,8.1c-14.1,21.4-20.3,39.9-27.1,63.9-41,143.4,44.6,284.9,186,325,86.6,24.6,163.4,10.8,222-59.9L1006.9,92.3c36.4,1.5,80-.3,115.1,3.9s30.7,7.5,50,8,13.9.3,20.7-.3c7.4-12.6,14.2-30.3,2.3-42.7-10.7-11.2-21.8-4.4-33-4.8-17.8-.6-37-2.7-52.4-6.1s-45.9-2.1-60.6-2c13.1-20.1,41-21.8,63-24,52.9-5.2,119-6.8,172.1-4.1,7.1.4,18.1,1.2,24.9,2.1,204.1,26.2,346.7,228.3,312,430Z"/>
+                {/* st23 - Körper dunkel */}
+                <path fill={cc.dark} d="M1380.9,606.3c-.3,0-1.7,3-4.8,4.1-8.3,2.9-16.2,7.1-25.2,7.9l4,6c-20-5.5-40.2,7.7-50.9,24.1s-5.8,29.8-28.1,28.1c-5.9-.5-9.4-4.8-15.8-4.1s-13.8,6-19.2,8v-2c-.6-5.2,14.7-10.8,20-12,7.9-1.8,10.6,1.5,17.9-3.1s17.5-21.2,6.2-30c-9.3-7.3-22.6-.3-32.2,3.2-58.1,21-80,48.4-149,54-91.2,7.4-193.9,1.8-285.9,0-29.5-.6-58.8,1.7-88.1-2-3.7-.5-8.1,2.5-7-3.9,13.8-1.1,20.2,0,32.9,0,99.5.6,198.5,3.4,298-.2,31.8-1.1,63.9.8,95.2-6.8,2.3-13.8,4-24.3,11.5-36.5,16.1-26.1,79.3-51.8,90.4-10.6,11.2-6.6,34.8-10.5,42.9,2.1s1.6,9.9,5,11.9c14.8-31,53.8-31.3,82-44v6ZM1214.9,624.3c-30.1-6.1-40.6,15.5-41,42l64.1-31.9c4.1-8.9-9.2-6.5-6-16-8.1,1.3-15.3-5.4-25,0l8,6Z"/>
+                {/* st21 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M604.9,694.3c-24.4-.6-48.7-1.2-73.1-1.9-5-.1-15-5.2-15,2.9s26.4,6.9,34.1,7c.5,4.1-4.5,7.5-8,8-6.7,1.1-28.5-5.1-31.6-10.4s.6-11.5,1.6-15.6c65.9-1.7,132.2,3.3,198,0,4-.2,8,.3,12,0-1.1,6.4,3.3,3.4,7,3.9,29.3,3.7,58.6,1.4,88.1,2,92,1.9,194.7,7.5,285.9,0,69-5.6,90.9-33,149-54,2.1,1.5,3.1,3.7,4,6-24.1,7.1-45.5,22.5-68.7,32.3-87,37.1-214,24.5-308.3,23.6-91.8-1-183.2-1.5-275.1-3.9Z"/>
+                {/* st25 - Körper mittel-dunkel */}
+                <path fill={cc.mediumDark} d="M464.9,80.3c-3.9,1.8-8.9,1.5-10,2-11.5-9.6-28.9-13-43.6-15.4-52.2-8.4-120.6-2.9-170.4,15.4v-6c26.3-10.6,55.3-20.4,84-24s117.8-4.1,144.7,16.3c1.9,1.4,3.8,2.8,5.3,4.7,0,.8-8.1,6.1-10,7Z"/>
+                {/* st8 - METALL mittel */}
+                <path fill={cc.metalMediumLight} d="M542.9,714.3c-17-.4-37.9,2-55,0s-19.5-17.5-8-26.1c8.1-6,23.2-3.7,33.1-3.9-1,4.1-3.7,12-1.6,15.6,3.1,5.3,24.9,11.4,31.6,10.4v4Z"/>
+                {/* st21 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M616.9,716.3c-12.3-.8-26-1.6-38-2,.8-5.7-8-4.6-6-12,12,.3,24.4,1.7,36,2s5.3,0,8,0c1.7,4.1,1.7,7.9,0,12Z"/>
+                {/* st12 - Körper mittel-dunkel */}
+                <path fill={cc.mediumDark} d="M240.9,82.3c-23.8,8.8-63.8,29.8-86,44,23.5-22.8,55.7-37.8,86-50v6Z"/>
+                {/* st16 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M578.9,714.3c-4-.1-8,.1-12,0-1.7-5.2-7.6-4.1-12-4v6c-3.5-.1-6.9-2-8-2l-1-2-1,2c-.7,0-1.3,0-2,0v-4c3.5-.5,8.5-3.9,8-8,7.3.1,14.7-.2,22,0-2,7.4,6.8,6.3,6,12Z"/>
+                {/* st21 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M554.9,716.3v-6c4.4,0,10.3-1.2,12,4-1,0-7,2.1-12,2Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M154.9,126.3c-.2.2.6,3.4-1.3,4.1l-24.7,15.9c9.6-9.1,15.5-13.3,26-20Z"/>
+                {/* st23 - Körper dunkel */}
+                <path fill={cc.dark} d="M1386.9,606.3c.8-3.8,3.9-3,6-4l4,4c-3.2.4-6.8-.4-10,0Z"/>
+                {/* st8 - METALL mittel */}
+                <path fill={cc.metalMediumLight} d="M544.9,714.3l1-2,1,2c-.7,0-1.3,0-2,0Z"/>
+                {/* st11 - Körper mittel-dunkel */}
+                <path fill={cc.mediumDark} d="M114.9,360.3l2.2,7.9h3.8c-11.6,59.7-2.8,112.5,24,166.1.7,1.3,1.3,2.7,2,4,42.8,81.1,124.5,136.8,217.1,144,3.8.3,8,1.9,6.9-4,1.1.2,2.7,0,4,0l1.1,4h6.9s0-4,0-4c1.3-.1,2.7,0,4,0,7,6.9,26.9,1.3,36.1-.9,37.5-9.3,58.7-30.8,83.9-57.1,1.9-2,4-4,6-6,4.9-5,8.3-10.1,12-14,110.7-116.7,218.7-236.9,327-356,45.7-50.3,91.2-100.9,135.8-152.2l4.1-1.9c5.1,1.3,9.7,1.8,15,2l-483.9,533.1c-58.6,70.7-135.4,84.5-222,59.9-141.4-40.1-227-181.6-186-325Z"/>
+                {/* st24 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M1144.9,90.3c-155.9-10.9-326.5-12.1-482.9-7.9-54.4,1.4-104.9-4.4-155.1,17.9-17.9,8-34.6,17.1-52,26-1.6-10.9,10.1-8.5,4-22,42.8-18.1,66.5-30.7,114.9-34.1,136.2-9.4,275.8-2,412,2.2,54.4,1.6,108.9,1.2,163.1,5.9-1.3,4-2.9,7.9-4,12Z"/>
+                {/* st26 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M464.9,86.3c-17.8,8.8-37.1,21.9-54,30s-27.8,11-42,15c-3.3,2.8-1.8,9.1-2,13h-6c-.3-1.8-.3-6.3,0-8s3.2-5.2,4-7l-.9-.9c-2.2,1.6-3.5,3.8-5,6-15.5,21.6-14.2,34.9-44,47-57.5,23.1-97.4,29-137.9,82.1-60.4,79.1-70.8,176.6-28.1,266.9v4s-4,0-4,0c-26.8-53.6-35.6-106.4-24-166,5.5-28.2,16.7-54.8,30-80s4.1-6.7,6-10c3.9-2.1,5.6-6.5,8-10,24.9-36.2,66.1-78.4,106.6-96.4s47.2-13.6,58.4-23.6c10.9-9.7,12.2-30.5,26.7-39.3,5.1-3.1,15.5-6.7,21.3-6.7,8.4,0,24.3,8.1,27.5,7.7s41.1-19.9,48.1-23.7,1.2-3.9,1.4-4c1.1-.5,6.1-.2,10-2v6Z"/>
+                {/* st21 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M1146.9,66.3c-15.3-1.5-33.3.6-49.1,0-172.3-5.5-353.7-17.6-525.9-6.1-45.2,3-112.1,28.8-149.7,54.3-2,1.4-3.8,2.8-5.3,4.7,13.5-.4,28.7-9.4,42-15,6.1,13.5-5.6,11.1-4,22-18.2,9.3-31,15.6-50,24-8.4-15.1-1-21.3,6-34,16.9-8.1,36.2-21.2,54-30,79.9-39.4,126.7-31.9,213.1-33.9,152.7-3.6,317-2.4,468.9,9.9v4Z"/>
+                {/* st9 - METALL mittel */}
+                <path fill={cc.metalMediumLight} d="M896.9,114.3c-93-2.5-185.2-6.6-278-12,.7-6.6,8.8-5.1,6-14,11.9-.5,24.3-1.7,36-2-1.1,6,3,3.9,6.9,4,65.6,2.4,131.4,5.3,197.1,8,7.7.3,17.3,1.6,26,2-1.3,6.2,5.5,8.2,6,14Z"/>
+                {/* st15 - Körper mittel-dunkel */}
+                <path fill={cc.mediumDark} d="M1308.9,22.3c-6.9-.9-17.8-1.7-24.9-2.1-53.1-2.7-119.2-1.1-172.1,4.1-22.1,2.2-49.9,3.9-63,24-5.1,0-15.5,5-22,1,10.7-9.4,19.7-23.2,32.9-29.1,20.1-8.9,63.5-8.5,87-10,44-2.7,128.6-10.5,168,0s8.4,2,8,4l-14,8Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M512.9,106.3c-4.1.9-7.9,2.6-11.7,4.3,4.1,32-30.4,72.5-61.4,75.6-18.5,1.9-44.8-1.8-35-26h4s0-3,0-3c-1-3.1-3.8.9-4,1-1.7.4-4.1-.2-6,0v-2c1.4-.7,3.8-5,6-6,19-8.4,31.8-14.7,50-24s34.1-18,52-26l6,6ZM484.9,118.3c-6.8,2.7-10.1,5-16,8-8.3,4.2-35.8,15.8-39.8,21.2-9,12.1,17.9,13.4,24.9,12.9s18.4-3.5,24.9-8.1c10.3-7.2,16.6-25.8,16-38-4.1-.7-7,2.8-10,4Z"/>
+                {/* st19 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M864.9,98.3c-65.7-2.7-131.5-5.6-197.1-8-3.9-.1-8,2-6.9-4,67.9-1.6,136.3.5,204,2v10Z"/>
+                {/* st13 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M966.9,104.3c-6.5,2.1-16.6-2-21-2h-40c-2.6,0-10-1.8-15-2-8.7-.4-18.3-1.7-26-2v-10c38.6.8,77.4,1.2,116,2-2.9,5.9-9.9,9.6-14,14Z"/>
+                {/* st8 - METALL mittel */}
+                <path fill={cc.metalMediumLight} d="M1144.9,90.3c1.1-4.1,2.7-8,4-12s8.4-11-2-12v-4c11.9,1,43.3-1.2,42,18.9-1.4,21.6-31.5,10-44,9.1Z"/>
+                {/* st1 - METALL dunkel */}
+                <path fill={cc.metalDark} d="M896.9,114.3c-.5-5.8-7.3-7.8-6-14,5,.2,12.4,2,15,2h40c4.4,0,14.5,4.1,21,2-2.1,2.2-4.1,11.8-11,12-19.7-.4-39.3-1.4-59-2Z"/>
+                {/* st1 - METALL dunkel */}
+                <path fill={cc.metalDark} d="M624.9,88.3c2.8,8.9-5.3,7.4-6,14-28.5-1.7-56.5-2.9-85-4s-7.4,1.5-7-2c32.1-7.2,65.2-6.7,98-8Z"/>
+                {/* st26 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M512.9,614.3h-6c3.2-11.1,13.6-12.7,16-16l2,2c-3.7,3.9-7.1,9-12,14Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M514.9,99.3c-.7,1.3-1.3,1.3-2,0h2Z"/>
+                {/* st4 - Körper mittel-dunkel */}
+                <path fill={cc.mediumDark} d="M1628.9,454.3l-8-2c34.7-201.7-107.9-403.8-312-430l14-8c.4-1.9-6.4-3.5-8-4,148.3,14.6,277.2,129.9,313,274,14.9,60.2,14.3,109.9,1,170Z"/>
+                {/* st20 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M1260.9,666.3c-5.3,1.2-20.6,6.8-20,12-1.9.2-4.3-.4-6,0-3,.6-4.4,3.2-6,4-4.5,2.2-7.9,5-10,6s-2.7,1.4-4,2-3.9,0-6,.9c-19.8,9.1-39.4,17.8-60,25.1-1.3,0-2.7,0-4,0-9.5.5-19.3,3.6-28,4s-2.7,0-4,0c-18.3.8-38.3,1.5-56,2s-8,0-12,0c-10.6.2-21.4-.1-32,0v-14c56-1.2,119.6,0,172-21s46.5-26.1,72-33c-.6,8,5.3,4.7,4,12Z"/>
+                {/* st17 - METALL dunkel */}
+                <path fill={cc.metalDark} d="M1162.9,722.3c-2.8-1.2-5,1.8-6,2s-1.4-.2-2,0c-55.6,14.9-83.8,10.5-140,8-17-.8-32.8-2.3-50-2v-4c24.2-.1,48.9,1,73.1,0s8,2.1,6.9-4c4,0,8,.1,12,0-1.1,6.1,3.1,3.9,6.9,4,14.3.6,28-.8,42.2-2,3.8-.3,8,2.3,6.9-4,1.3,0,2.7,0,4,0-.9,6.4,2.3,3.6,6.1,3.1s10.9-1.3,16-2.2,7.1.2,6-4.9c1.3,0,2.7,0,4,0s1.2,1.7,2.9,1.7c3.3,0,7.3-2.6,11.1-1.7-.1,1.9.3,4.1,0,6Z"/>
+                {/* st15 - Körper mittel-dunkel */}
+                <path fill={cc.mediumDark} d="M1576.9,580.3h-2c20.6-36.5,38.9-86.6,46-128l8,2c-9.6,43.7-25.7,89.3-52,126Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1564.9,596.3c-3.4,4.7-3.5,3.5-4,4-.6-3.8.2-4.7,4-4Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1572.9,584.3c.6-1,1.2-2.6,2-4h2c-1.2,1.6-2,3.3-4,4Z"/>
+                {/* st6 - METALL hell/bright */}
+                <path fill={cc.metalBright} d="M1256.9,654.3c-25.6,6.8-47.8,23.2-72,33-52.4,21.1-115.9,19.8-172,21-38.2.8-78.3,2-116,2s-38.8-1.8-58-2c-73.9-.7-148.1-1.9-222-4-2.7,0-5.3,0-8,0l-4-10c91.8,2.4,183.2,3,275.1,3.9,94.3,1,221.2,13.5,308.3-23.6,23.1-9.8,44.5-25.2,68.7-32.3,2.8,7.5.5,5.9,0,12Z"/>
+                {/* st20 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M894.9,722.3c-18,0-36,.2-54,0l-2-14c19.2.2,39.2,2,58,2l-2,12Z"/>
+                {/* st16 - METALL highlight */}
+                <path fill={cc.metalHighlight} d="M1012.9,722.3c-39.3.5-78.7.2-118,0l2-12c37.7,0,77.8-1.2,116-2v14Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1154.9,724.3c.6-.2,1.4.1,2,0l-1,2-1-2Z"/>
+                {/* st12 - Körper mittel-dunkel */}
+                <path fill={cc.mediumDark} d="M120.9,368.3h-3.8c0-.1-2.2-8-2.2-8,6.9-24,13-42.5,27.1-63.9l8.9-8.1c-13.3,25.2-24.5,51.8-30,80Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1230.9,686.3c-4.3,1-9.7,6.8-12,2,2.1-1,5.5-3.8,10-6l2,4Z"/>
+                {/* st23 - Körper dunkel */}
+                <path fill={cc.dark} d="M1230.9,686.3l-2-4c1.6-.8,3-3.4,6-4-.2,2.1.6,2.8,2,4s2.5,2.1,4,2v2c-3.1.5-7.2-.6-10,0Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1236.9,682.3c-1.4-1.2-2.2-1.9-2-4,1.7-.4,4.1.2,6,0v2c-1.4.5-2.6,1.4-4,2Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M156.9,278.3c2.1-3.6,2.3-11.1,8-10-2.4,3.5-4.1,7.9-8,10Z"/>
+                {/* st2 - METALL mittel */}
+                <path fill={cc.metalMedium} d="M1260.9,666.3c1.3-7.3-4.6-4-4-12s2.8-4.5,0-12-1.9-4.5-4-6c9.6-3.5,22.9-10.5,32.2-3.2,11.2,8.8,3.7,23.8-6.2,30s-10.1,1.4-17.9,3.1Z"/>
+                {/* st14 - Körper dunkel */}
+                <path fill={cc.dark} d="M1214.9,624.3l-8-6c9.8-5.4,17,1.3,25,0-3.2,9.4,10.2,7.1,6,16l-64.1,31.9c.5-26.5,10.9-48,41-42Z"/>
+                {/* st5 - METALL hell/bright */}
+                <path fill={cc.metalBright} d="M608.9,704.3c-11.6-.3-24-1.7-36-2s-14.7.1-22,0-34.1,3.4-34.1-7,10-3,15-2.9c24.4.7,48.7,1.3,73.1,1.9l4,10Z"/>
+                {/* st26 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M370.9,678.3c1.1,5.8-3.1,4.3-6.9,4-92.6-7.1-174.2-62.8-217.1-144h6c51.8,89.8,121.4,120.1,218,140Z"/>
+                {/* st26 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M506.9,620.3c-25.3,26.2-46.5,47.8-83.9,57.1-9.2,2.3-29,7.9-36.1.9,6.5-.4,26.8-5.1,34-7,35.1-9.3,59-32.7,86-55,0,1.3,0,2.7,0,4Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M392.9,162.3c-6,.9-12.3-.4-18-2l2-2c2.2.6,13.2.4,16,0v4Z"/>
+                {/* st22 - Körper dunkel */}
+                <path fill={cc.dark} d="M374.9,160.3c-3.9-1.1-4.9-.7-8-4v-6c3,.9,8.2,7.5,10,8l-2,2Z"/>
+                {/* st26 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M382.9,678.3v4s-6.9,0-6.9,0l-1.1-4c.8,0,7.6,0,8,0Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M366.9,150.3v6c-2.3-2.4-5.5-8.7-6-12h6c0,2,0,4,0,6Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M152.9,538.3h-6c-.7-1.3-1.3-2.7-2-4h4s0-4,0-4l4,8Z"/>
+                {/* st22 - Körper dunkel */}
+                <path fill={cc.dark} d="M392.9,162.3v-4c.3,0,5.7-1.9,6-2v2c-1.2,3.1-3,3.6-6,4Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M506.9,620.3c0-1.3,0-2.7,0-4s-.2-1.5,0-2h6c-2,2-4.1,4-6,6Z"/>
+                {/* st22 - Körper dunkel */}
+                <path fill={cc.dark} d="M404.9,158.3c.2,0,3-4,4-1v3s-4,0-4,0v-2Z"/>
+                {/* st2 - METALL mittel */}
+                <path fill={cc.metalMedium} d="M360.9,136.3l-2-2c1.5-2.1,2.8-4.3,5-6l.9.9c-.8,1.8-3.7,5.7-4,7Z"/>
+                {/* st18 - METALL hell/bright */}
+                <path fill={cc.metalBright} d="M1148.9,78.3c-54.2-4.7-108.7-4.3-163.1-5.9-136.2-4.1-275.8-11.5-412-2.2-48.4,3.3-72.1,16-114.9,34.1-13.2,5.6-28.5,14.6-42,15,1.6-1.8,3.3-3.3,5.3-4.7,37.6-25.5,104.5-51.3,149.7-54.3,172.2-11.5,353.6.6,525.9,6.1,15.8.5,33.8-1.6,49.1,0s3.4,7.9,2,12Z"/>
+                {/* st8 - METALL mittel */}
+                <path fill={cc.metalMediumLight} d="M404.9,150.3c-2.2,1-4.6,5.3-6,6s-5.7,2-6,2c-2.8.4-13.8.6-16,0s-7-7.1-10-8c0-2,0-4,0-6,.1-3.9-1.4-10.2,2-13,14.2-4,28.7-8.6,42-15-7,12.7-14.4,18.9-6,34Z"/>
+                {/* st10 - Körper dunkel */}
+                <path fill={cc.dark} d="M478.9,152.3c-6.5,4.6-17,7.5-24.9,8.1s-33.9-.8-24.9-12.9c4-5.3,31.5-17,39.8-21.2,4.3,2.6,8.8,4.7,14,4-.9,7.3.9,14.9-4,22Z"/>
+                {/* st12 - Körper mittel-dunkel */}
+                <path fill={cc.mediumDark} d="M478.9,152.3c4.9-7.1,3.1-14.7,4-22s3.9-7.5,2-12c3-1.2,5.8-4.7,10-4,.6,12.2-5.7,30.8-16,38Z"/>
+                {/* st7 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M482.9,130.3c-5.2.7-9.7-1.4-14-4,5.9-3,9.2-5.3,16-8,1.9,4.5-1.7,9.4-2,12Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1112.9,720.3c1.1,6.2-3.1,3.7-6.9,4-14.2,1.2-27.9,2.6-42.2,2s-8,2.1-6.9-4c17.7-.5,37.7-1.2,56-2Z"/>
+                {/* st0 - Körper sehr dunkel */}
+                <path fill={cc.veryDark} d="M1144.9,716.3c1.1,5.1-2.5,4.3-6,4.9-5.1.9-10.8,1.5-16,2.2s-7,3.3-6.1-3.1c8.7-.4,18.5-3.5,28-4Z"/>
+              </g>
+            </g>
+          );
+        })()}
+
         {/* === TEXT BEREICH (rechts vom Logo, innerhalb der Hauptfläche) === */}
         <foreignObject x={textX} y={textY} width={textMaxWidth} height="800">
-          <div style={{ 
-            color: 'white', 
+          <div style={{
+            color: textColor,
             fontFamily: 'Georgia, serif',
             width: '100%',
             maxWidth: `${textMaxWidth}px`
@@ -346,6 +577,7 @@ export default function Configurator() {
 
   const [selectedColor, setSelectedColor] = useState(colorPalette[29]); // Dunkelblau als Default
   const [selectedCarabiner, setSelectedCarabiner] = useState(carabinerColors[1]); // Blau als Default
+  const [selectedTextColor, setSelectedTextColor] = useState(textColors[0]); // Weiß als Default
   const [textLine1, setTextLine1] = useState('');
   const [textLine2, setTextLine2] = useState('');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -354,6 +586,7 @@ export default function Configurator() {
   const [companyName, setCompanyName] = useState('');
   const [quantity, setQuantity] = useState('1000');
   const [message, setMessage] = useState('');
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [showBackSide, setShowBackSide] = useState(false);
 
   // URL-Parameter auswerten für Presets
@@ -478,6 +711,7 @@ export default function Configurator() {
                 textLine2={textLine2}
                 logoUrl={logoUrl}
                 carabinerColor={selectedCarabiner.hex}
+                textColor={selectedTextColor.hex}
                 showBack={showBackSide}
               />
               <p className="text-center text-gray-500 text-sm mt-4">
@@ -562,8 +796,9 @@ export default function Configurator() {
               {/* 3. Farbauswahl */}
               <div>
                 <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  3. Farbe wählen
+                  3. Tuchfarbe wählen
                 </label>
+                <p className="text-xs text-gray-500 mb-2">Standard-Tuchfarbe: Gelb (nicht konfigurierbar für Einzelbestellungen)</p>
                 <div className="grid gap-1 p-3 bg-gray-50 rounded-xl" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
                   {colorPalette.map((color) => (
                     <button
@@ -582,10 +817,37 @@ export default function Configurator() {
                 </div>
               </div>
 
-              {/* 4. Karabiner-Farbauswahl */}
+              {/* 4. Schriftfarbe */}
               <div>
                 <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  4. Karabiner-Farbe wählen
+                  4. Schriftfarbe wählen
+                </label>
+                <div className="flex gap-3 p-3 bg-gray-50 rounded-xl">
+                  {textColors.map((color) => (
+                    <button
+                      key={color.id}
+                      type="button"
+                      onClick={() => setSelectedTextColor(color)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                        selectedTextColor.id === color.id
+                          ? 'ring-2 ring-[#2E5A4B] bg-white shadow-sm'
+                          : 'bg-white/50 hover:bg-white'
+                      }`}
+                    >
+                      <span
+                        className="w-5 h-5 rounded-full ring-1 ring-gray-300"
+                        style={{ backgroundColor: color.hex }}
+                      />
+                      <span className="text-sm font-medium text-gray-700">{color.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 5. Karabiner-Farbauswahl */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  5. Karabiner-Farbe wählen
                 </label>
                 <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-xl">
                   {carabinerColors.map((color) => (
@@ -662,12 +924,36 @@ export default function Configurator() {
                 </div>
               </div>
 
+              {/* Datenschutz-Checkbox */}
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="privacy"
+                  checked={privacyAccepted}
+                  onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                  required
+                  className="mt-1 w-4 h-4 text-[#2E5A4B] border-gray-300 rounded focus:ring-[#2E5A4B]"
+                />
+                <label htmlFor="privacy" className="text-sm text-gray-600">
+                  Ich habe die{' '}
+                  <a href="/datenschutz" className="text-[#2E5A4B] underline hover:text-[#234539]">
+                    Datenschutzerklärung
+                  </a>{' '}
+                  gelesen und bin mit der Verarbeitung meiner Daten einverstanden. *
+                </label>
+              </div>
+
               {/* Submit */}
               <motion.button
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-[#2E5A4B] text-white rounded-xl font-semibold text-lg hover:bg-[#234539] transition-colors shadow-lg shadow-[#2E5A4B]/20"
+                disabled={!privacyAccepted}
+                className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors shadow-lg ${
+                  privacyAccepted
+                    ? 'bg-[#2E5A4B] text-white hover:bg-[#234539] shadow-[#2E5A4B]/20'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-gray-200'
+                }`}
               >
                 Unverbindlich anfragen
               </motion.button>

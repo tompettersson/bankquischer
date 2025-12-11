@@ -17,7 +17,7 @@ export default function Features() {
         "Der Bankquischer Sylt ist Ihr zuverlässiger Begleiter für windige Tage an der Nordseeküste. Das hochwertige Microfasertuch (20 x 30 cm) saugt Regentropfen und Gischt in Sekunden auf. Mit praktischer Pouch und Karabiner - immer griffbereit.",
       items: [
         "20 x 30 cm Kompaktformat",
-        "500% saugfähiger als Baumwolle",
+        "Bis zu ca. 5x saugfähiger als Baumwolle",
         "Mit Pouch & Karabiner",
         "Perfekt für Nordsee-Wetter",
       ],

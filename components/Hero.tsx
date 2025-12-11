@@ -327,9 +327,9 @@ export default function Hero() {
           <div className="bg-[#FFDB65] p-4 xl:p-5 rounded-3xl min-w-[200px] xl:min-w-[240px]">
             <p className="text-gray-600 text-xs font-medium mb-2">Saugstärke</p>
             <div className="flex items-end gap-2">
-              <span className="text-4xl xl:text-5xl font-semibold text-gray-900">500%</span>
+              <span className="text-4xl xl:text-5xl font-semibold text-gray-900">bis zu 5x</span>
               <div className="mb-1">
-                <p className="text-gray-900 text-xs xl:text-sm font-medium">mehr als</p>
+                <p className="text-gray-900 text-xs xl:text-sm font-medium">saugfähiger als</p>
                 <p className="text-gray-900 text-xs xl:text-sm font-medium">Baumwolle</p>
               </div>
             </div>
@@ -479,9 +479,9 @@ export default function Hero() {
           <div className="bg-[#FFDB65] p-4 sm:p-6 rounded-3xl w-full max-w-sm">
             <p className="text-gray-600 text-sm sm:text-base font-medium mb-3 sm:mb-4">Saugstärke</p>
             <div className="flex items-end gap-2 sm:gap-3">
-              <span className="text-4xl sm:text-5xl font-semibold text-gray-900">500%</span>
+              <span className="text-4xl sm:text-5xl font-semibold text-gray-900">bis zu 5x</span>
               <div className="mb-1">
-                <p className="text-gray-900 text-sm sm:text-base font-medium">mehr als</p>
+                <p className="text-gray-900 text-sm sm:text-base font-medium">saugfähiger als</p>
                 <p className="text-gray-900 text-sm sm:text-base font-medium">Baumwolle</p>
               </div>
             </div>

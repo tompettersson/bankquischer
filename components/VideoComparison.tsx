@@ -51,6 +51,9 @@ export default function VideoComparison() {
                 Zerreißt, verschmiert das Wasser und hinterlässt Rückstände.
                 Am Ende ist die Bank immer noch nass.
               </p>
+              <p className="text-sm text-gray-500 italic">
+                Einweg – landet oft in der Umwelt statt im Müll.
+              </p>
             </div>
           </motion.div>
 
@@ -77,6 +80,9 @@ export default function VideoComparison() {
               <p className="text-gray-600">
                 Saugt das Wasser blitzschnell auf - die Bank ist nun sauber und trocken.
                 Einfach auswringen und wieder verwenden.
+              </p>
+              <p className="text-sm text-gray-500 italic">
+                Mehrweg – hält jahrelang und schont die Umwelt.
               </p>
             </div>
           </motion.div>
