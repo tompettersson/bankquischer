@@ -2,22 +2,37 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    // Wenn wir auf der Startseite sind, scroll nach oben
+    if (pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    // Sonst navigiert der Link zur Startseite
+  };
 
   return (
     <nav className="w-full bg-[#F9F8F5] sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center flex-shrink-0">
+        {/* Logo - klickbar zum Hochscrollen */}
+        <Link
+          href="/"
+          onClick={handleLogoClick}
+          className="flex items-center flex-shrink-0 cursor-pointer"
+        >
           <img
             src="/logo.svg"
             alt="Bankquischer Logo"
             className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto"
           />
-        </div>
+        </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-8 text-base font-medium text-gray-700">
