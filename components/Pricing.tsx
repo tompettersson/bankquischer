@@ -2,13 +2,27 @@
 
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function Pricing() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+
+  // Scroll zu einem Element mit optionalem URL-Parameter
+  const scrollToSection = useCallback((sectionId: string, product?: string) => {
+    // Setze den Hash für die Produkt-Vorauswahl
+    if (product) {
+      window.location.hash = `${sectionId}?product=${product}`;
+    }
+
+    // Scroll zum Element
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   const regionalPlans = [
     {
@@ -95,12 +109,12 @@ export default function Pricing() {
                   whileTap={{ scale: 0.98 }}
                   className="mt-auto"
                 >
-                  <Link
-                    href={`#kontakt?product=${plan.product}`}
-                    className="block w-full text-center py-2.5 rounded-full font-medium transition-colors bg-gray-100 text-gray-900 hover:bg-gray-200 text-sm"
+                  <button
+                    onClick={() => scrollToSection('kontakt', plan.product)}
+                    className="block w-full text-center py-2.5 rounded-full font-medium transition-colors bg-gray-100 text-gray-900 hover:bg-gray-200 text-sm cursor-pointer"
                   >
                     Jetzt anfragen
-                  </Link>
+                  </button>
                 </motion.div>
               </motion.div>
             ))}
@@ -180,12 +194,12 @@ export default function Pricing() {
                 whileTap={{ scale: 0.98 }}
                 className="mt-auto"
               >
-                <Link
-                  href="#kontakt"
-                  className="block w-full text-center py-3 rounded-full font-medium transition-colors bg-gray-100 text-gray-900 hover:bg-gray-200"
+                <button
+                  onClick={() => scrollToSection('kontakt')}
+                  className="block w-full text-center py-3 rounded-full font-medium transition-colors bg-gray-100 text-gray-900 hover:bg-gray-200 cursor-pointer"
                 >
                   Design anfragen
-                </Link>
+                </button>
               </motion.div>
             </motion.div>
           </div>
