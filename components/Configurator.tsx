@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef, useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
+import { toPng } from 'html-to-image';
 
 // Farbpaletten basierend auf den Stoffmustern (inkl. helle Farben für schwarze Schrift)
 const colorPalette = [
@@ -72,6 +73,14 @@ const colorPalette = [
 const textColors = [
   { id: 1, name: 'Weiß', hex: '#FFFFFF' },
   { id: 2, name: 'Schwarz', hex: '#000000' },
+];
+
+// Schriftarten-Optionen
+const fontOptions = [
+  { id: 1, name: 'Klassisch (Serif)', family: 'Georgia, serif', preview: 'Aa' },
+  { id: 2, name: 'Modern (Sans-Serif)', family: 'Arial, Helvetica, sans-serif', preview: 'Aa' },
+  { id: 3, name: 'Technisch (Monospace)', family: 'Courier New, monospace', preview: 'Aa' },
+  { id: 4, name: 'Elegant (Script)', family: 'Brush Script MT, cursive', preview: 'Aa' },
 ];
 
 // Karabiner-Farben basierend auf dem Bild
@@ -156,7 +165,8 @@ function BankquischerPreview({
   carabinerColor,
   textColor,
   showBack = false,
-  logoRotation = 0
+  logoRotation = 0,
+  fontFamily = 'Georgia, serif'
 }: {
   color: string;
   textLine1: string;
@@ -166,6 +176,7 @@ function BankquischerPreview({
   textColor: string;
   showBack?: boolean;
   logoRotation?: number;
+  fontFamily?: string;
 }) {
   // Paddings für Text und Logo innerhalb der Hauptfläche
   // Hauptfläche: x=350.4 bis 1769.3 (Breite ~1419), y=274.9 bis 1280 (Höhe ~1005)
@@ -188,7 +199,7 @@ function BankquischerPreview({
   const textX = logoX + logoWidth + 45; // Weniger Abstand zum Logo
   const textBlockHeight = 500; // etwas kompakter
   const textY = mainAreaY + (mainAreaHeight - textBlockHeight) / 2;
-  const textMaxWidth = 850; // Etwas schmaler für kleinere Schrift
+  const textMaxWidth = 920; // Breiter damit "Bankquischer" nicht umbricht
 
   // Rückseite: 180° gedreht mit URL zentriert
   if (showBack) {
@@ -534,7 +545,7 @@ function BankquischerPreview({
         <foreignObject x={textX} y={textY} width={textMaxWidth} height="800">
           <div style={{
             color: textColor,
-            fontFamily: 'Georgia, serif',
+            fontFamily: fontFamily,
             width: '100%',
             maxWidth: `${textMaxWidth}px`
           }}>
@@ -581,7 +592,9 @@ const presets: Record<string, { textLine1: string; textLine2: string }> = {
 
 export default function Configurator() {
   const ref = useRef(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [selectedColor, setSelectedColor] = useState(colorPalette[29]); // Dunkelblau als Default
   const [selectedCarabiner, setSelectedCarabiner] = useState(carabinerColors[1]); // Blau als Default
@@ -597,6 +610,7 @@ export default function Configurator() {
   const [message, setMessage] = useState('');
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [showBackSide, setShowBackSide] = useState(false);
+  const [selectedFont, setSelectedFont] = useState(fontOptions[0]); // Klassisch (Serif) als Default
 
   // URL-Parameter auswerten für Presets
   useEffect(() => {
@@ -649,10 +663,64 @@ export default function Configurator() {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Hier würde normalerweise die Anfrage versendet werden
-    alert(`Vielen Dank für Ihre Anfrage!\n\nFarbe: ${selectedColor.name}\nKarabiner: ${selectedCarabiner.name}\nText: ${textLine1} / ${textLine2}\nMenge: ${quantity} Stück\n\nWir melden uns zeitnah bei Ihnen.`);
+    setIsSubmitting(true);
+
+    try {
+      // Screenshot der Vorschau erstellen
+      let screenshotDataUrl = '';
+      if (previewRef.current) {
+        try {
+          screenshotDataUrl = await toPng(previewRef.current, {
+            quality: 0.95,
+            pixelRatio: 2,
+          });
+        } catch (err) {
+          console.error('Screenshot konnte nicht erstellt werden:', err);
+        }
+      }
+
+      // Konfigurationsdaten zusammenstellen
+      const configData = {
+        contactEmail,
+        companyName,
+        quantity,
+        message,
+        selectedColor: selectedColor.name,
+        selectedColorHex: selectedColor.hex,
+        selectedCarabiner: selectedCarabiner.name,
+        selectedCarabinerHex: selectedCarabiner.hex,
+        selectedTextColor: selectedTextColor.name,
+        selectedFont: selectedFont.name,
+        selectedFontFamily: selectedFont.family,
+        textLine1,
+        textLine2,
+        logoFileName,
+        logoRotation,
+        screenshot: screenshotDataUrl,
+      };
+
+      // API-Anfrage senden
+      const response = await fetch('/api/configurator', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(configData),
+      });
+
+      if (response.ok) {
+        alert(`Vielen Dank für Ihre Anfrage!\n\nFarbe: ${selectedColor.name}\nSchriftart: ${selectedFont.name}\nKarabiner: ${selectedCarabiner.name}\nText: ${textLine1} / ${textLine2}\nMenge: ${quantity} Stück\n\nWir melden uns zeitnah bei Ihnen.`);
+      } else {
+        throw new Error('Fehler beim Senden der Anfrage');
+      }
+    } catch (error) {
+      console.error('Fehler:', error);
+      alert('Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -714,18 +782,21 @@ export default function Configurator() {
                   </button>
                 </div>
               </div>
-              <BankquischerPreview
-                color={selectedColor.hex}
-                textLine1={textLine1}
-                textLine2={textLine2}
-                logoUrl={logoUrl}
-                carabinerColor={selectedCarabiner.hex}
-                textColor={selectedTextColor.hex}
-                showBack={showBackSide}
-                logoRotation={logoRotation}
-              />
+              <div ref={previewRef} className="bg-white rounded-xl p-4">
+                <BankquischerPreview
+                  color={selectedColor.hex}
+                  textLine1={textLine1}
+                  textLine2={textLine2}
+                  logoUrl={logoUrl}
+                  carabinerColor={selectedCarabiner.hex}
+                  textColor={selectedTextColor.hex}
+                  showBack={showBackSide}
+                  logoRotation={logoRotation}
+                  fontFamily={selectedFont.family}
+                />
+              </div>
               <p className="text-center text-gray-500 text-sm mt-4">
-                Farbe: {selectedColor.name} • {showBackSide ? 'Rückseite' : 'Vorderseite'}
+                Farbe: {selectedColor.name} • Schrift: {selectedFont.name} • {showBackSide ? 'Rückseite' : 'Vorderseite'}
               </p>
             </div>
           </motion.div>
@@ -772,6 +843,33 @@ export default function Configurator() {
                     {textLine2.length}/40 Zeichen
                     {textLine2.length > 35 && ' (Maximum fast erreicht!)'}
                   </p>
+                </div>
+
+                {/* Schriftart-Auswahl */}
+                <div className="mt-4">
+                  <label className="block text-xs text-gray-500 mb-2">Schriftart wählen</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {fontOptions.map((font) => (
+                      <button
+                        key={font.id}
+                        type="button"
+                        onClick={() => setSelectedFont(font)}
+                        className={`px-3 py-2 rounded-lg border-2 transition-all text-left ${
+                          selectedFont.id === font.id
+                            ? 'border-[#2E5A4B] bg-[#2E5A4B]/5'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <span
+                          style={{ fontFamily: font.family }}
+                          className="text-lg font-medium"
+                        >
+                          {font.preview}
+                        </span>
+                        <span className="text-xs text-gray-500 ml-2">{font.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -978,16 +1076,26 @@ export default function Configurator() {
               {/* Submit */}
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                disabled={!privacyAccepted}
-                className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors shadow-lg ${
-                  privacyAccepted
+                whileHover={!isSubmitting && privacyAccepted ? { scale: 1.02 } : {}}
+                whileTap={!isSubmitting && privacyAccepted ? { scale: 0.98 } : {}}
+                disabled={!privacyAccepted || isSubmitting}
+                className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors shadow-lg flex items-center justify-center gap-2 ${
+                  privacyAccepted && !isSubmitting
                     ? 'bg-[#2E5A4B] text-white hover:bg-[#234539] shadow-[#2E5A4B]/20'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-gray-200'
                 }`}
               >
-                Unverbindlich anfragen
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Wird gesendet...
+                  </>
+                ) : (
+                  'Unverbindlich anfragen'
+                )}
               </motion.button>
 
               <p className="text-center text-sm text-gray-500">

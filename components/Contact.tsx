@@ -25,6 +25,7 @@ export default function Contact() {
     quantity: '1000',
     message: '',
   });
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   // URL-Parameter auswerten für Produkt-Vorauswahl und zum Formular scrollen
   useEffect(() => {
@@ -180,11 +181,34 @@ export default function Contact() {
             />
           </div>
 
+          {/* Datenschutz-Checkbox */}
+          <div className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="privacy-contact"
+              checked={privacyAccepted}
+              onChange={(e) => setPrivacyAccepted(e.target.checked)}
+              className="mt-1 w-4 h-4 text-[#2E5A4B] border-gray-300 rounded focus:ring-[#2E5A4B]"
+            />
+            <label htmlFor="privacy-contact" className="text-sm text-gray-600">
+              Ich habe die{' '}
+              <a href="/datenschutz" className="text-[#2E5A4B] underline hover:text-[#234539]">
+                Datenschutzerklärung
+              </a>{' '}
+              gelesen und bin mit der Verarbeitung meiner Daten einverstanden. *
+            </label>
+          </div>
+
           <motion.button
             type="submit"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full py-4 bg-[#2E5A4B] text-white rounded-xl font-semibold text-lg hover:bg-[#234539] transition-colors shadow-lg shadow-[#2E5A4B]/20"
+            disabled={!privacyAccepted}
+            whileHover={privacyAccepted ? { scale: 1.02 } : {}}
+            whileTap={privacyAccepted ? { scale: 0.98 } : {}}
+            className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors shadow-lg ${
+              privacyAccepted
+                ? 'bg-[#2E5A4B] text-white hover:bg-[#234539] shadow-[#2E5A4B]/20'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
+            }`}
           >
             Anfrage senden
           </motion.button>
