@@ -155,7 +155,8 @@ function BankquischerPreview({
   logoUrl,
   carabinerColor,
   textColor,
-  showBack = false
+  showBack = false,
+  logoRotation = 0
 }: {
   color: string;
   textLine1: string;
@@ -164,6 +165,7 @@ function BankquischerPreview({
   carabinerColor: string;
   textColor: string;
   showBack?: boolean;
+  logoRotation?: number;
 }) {
   // Paddings für Text und Logo innerhalb der Hauptfläche
   // Hauptfläche: x=350.4 bis 1769.3 (Breite ~1419), y=274.9 bis 1280 (Höhe ~1005)
@@ -173,17 +175,20 @@ function BankquischerPreview({
   const mainAreaHeight = 1005.1;
   const padding = 40; // Weniger Padding zum Rand
 
-  // Logo-Bereich (links) - Hochformat 9:16, vertikal zentriert, größer
-  const logoX = mainAreaX + padding;
-  const logoWidth = 390;
-  const logoHeight = 530;
+  // Logo-Bereich (links) - QUADRATISCH, mit Abstand links und zum Text
+  const logoSize = 420; // Quadratisch, größer
+  const logoX = mainAreaX + padding + 35; // Weniger Abstand nach links
+  const logoWidth = logoSize;
+  const logoHeight = logoSize;
   const logoY = mainAreaY + (mainAreaHeight - logoHeight) / 2; // vertikal zentriert
+  const logoCenterX = logoX + logoWidth / 2;
+  const logoCenterY = logoY + logoHeight / 2;
 
-  // Text-Bereich (rechts vom Logo) - mit limitierter Breite für Umbrüche, vertikal zentriert
-  const textX = logoX + logoWidth + 40; // Gleicher Abstand wie links zum Rand
-  const textBlockHeight = 600; // geschätzte Höhe des Textblocks
+  // Text-Bereich (rechts vom Logo) - weniger Abstand zum Logo
+  const textX = logoX + logoWidth + 45; // Weniger Abstand zum Logo
+  const textBlockHeight = 500; // etwas kompakter
   const textY = mainAreaY + (mainAreaHeight - textBlockHeight) / 2;
-  const textMaxWidth = 1000; // Feste maximale Breite für Text, damit Überschrift richtig umbricht
+  const textMaxWidth = 850; // Etwas schmaler für kleinere Schrift
 
   // Rückseite: 180° gedreht mit URL zentriert
   if (showBack) {
@@ -246,15 +251,16 @@ function BankquischerPreview({
           />
         </g>
 
-        {/* URL Text zentriert (nicht gedreht, damit lesbar) */}
+        {/* URL Text 90° gedreht (W unten, .de oben), am rechten Rand der Hauptfläche */}
         <text
-          x="1060"
+          x="1730"
           y="780"
           textAnchor="middle"
-          fill="white"
-          fontSize="80"
+          fill={textColor}
+          fontSize="75"
           fontFamily="Arial, sans-serif"
           fontWeight="normal"
+          transform="rotate(-90 1730 780)"
         >
           www.bankquischer.de
         </text>
@@ -325,16 +331,18 @@ function BankquischerPreview({
 
         {/* === LOGO BEREICH (links innerhalb der Hauptfläche) === */}
         {logoUrl ? (
-          <image
-            href={logoUrl}
-            x={logoX}
-            y={logoY}
-            width={logoWidth}
-            height={logoHeight}
-            preserveAspectRatio="xMidYMid meet"
-          />
+          <g transform={`rotate(${logoRotation} ${logoCenterX} ${logoCenterY})`}>
+            <image
+              href={logoUrl}
+              x={logoX}
+              y={logoY}
+              width={logoWidth}
+              height={logoHeight}
+              preserveAspectRatio="xMidYMid meet"
+            />
+          </g>
         ) : (
-          <g>
+          <g transform={`rotate(${logoRotation} ${logoCenterX} ${logoCenterY})`}>
             {/* Platzhalter für Logo */}
             <rect
               x={logoX}
@@ -530,12 +538,12 @@ function BankquischerPreview({
             width: '100%',
             maxWidth: `${textMaxWidth}px`
           }}>
-            {/* Zeile 1 - Große Schrift (konfigurierbar) - 30% kleiner, mit Umbrüchen */}
+            {/* Zeile 1 - Große Schrift (konfigurierbar) */}
             <div style={{
-              fontSize: textLine1.length > 25 ? "101px" : textLine1.length > 18 ? "118px" : "135px",
+              fontSize: textLine1.length > 25 ? "92px" : textLine1.length > 18 ? "108px" : "124px",
               fontWeight: "bold",
-              lineHeight: "1.2",
-              marginBottom: "20px",
+              lineHeight: "1.15",
+              marginBottom: "15px",
               wordWrap: "break-word",
               overflowWrap: "break-word",
               maxWidth: `${textMaxWidth}px`
@@ -543,12 +551,12 @@ function BankquischerPreview({
               {textLine1 || 'Sylter Bankquischer'}
             </div>
 
-            {/* Zeile 2 - Kleine Schrift (konfigurierbar) - 30% kleiner */}
+            {/* Zeile 2 - Kleine Schrift (konfigurierbar) */}
             <div style={{
-              fontSize: textLine2.length > 35 ? "73px" : "84px",
+              fontSize: textLine2.length > 35 ? "68px" : "80px",
               fontStyle: "italic",
               lineHeight: "1.2",
-              marginBottom: "20px",
+              marginBottom: "15px",
               wordWrap: "break-word",
               overflowWrap: "break-word",
               maxWidth: `${textMaxWidth}px`
@@ -582,6 +590,7 @@ export default function Configurator() {
   const [textLine2, setTextLine2] = useState('');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoFileName, setLogoFileName] = useState<string>('');
+  const [logoRotation, setLogoRotation] = useState(0); // 0, 90, 180, 270 Grad
   const [contactEmail, setContactEmail] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [quantity, setQuantity] = useState('1000');
@@ -713,6 +722,7 @@ export default function Configurator() {
                 carabinerColor={selectedCarabiner.hex}
                 textColor={selectedTextColor.hex}
                 showBack={showBackSide}
+                logoRotation={logoRotation}
               />
               <p className="text-center text-gray-500 text-sm mt-4">
                 Farbe: {selectedColor.name} • {showBackSide ? 'Rückseite' : 'Vorderseite'}
@@ -742,7 +752,11 @@ export default function Configurator() {
                     maxLength={30}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2E5A4B] focus:ring-2 focus:ring-[#2E5A4B]/20 outline-none transition-all"
                   />
-                  <p className="text-xs text-gray-500 mt-1">{textLine1.length}/30 Zeichen</p>
+                  <p className={`text-xs mt-1 ${textLine1.length >= 25 ? 'text-orange-500' : 'text-gray-500'}`}>
+                    {textLine1.length}/30 Zeichen
+                    {textLine1.length > 18 && textLine1.length <= 25 && ' (wird 2-zeilig dargestellt)'}
+                    {textLine1.length > 25 && ' (Maximum fast erreicht!)'}
+                  </p>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Kleine Schrift (Zeile 2)</label>
@@ -754,7 +768,10 @@ export default function Configurator() {
                     maxLength={40}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2E5A4B] focus:ring-2 focus:ring-[#2E5A4B]/20 outline-none transition-all"
                   />
-                  <p className="text-xs text-gray-500 mt-1">{textLine2.length}/40 Zeichen</p>
+                  <p className={`text-xs mt-1 ${textLine2.length >= 35 ? 'text-orange-500' : 'text-gray-500'}`}>
+                    {textLine2.length}/40 Zeichen
+                    {textLine2.length > 35 && ' (Maximum fast erreicht!)'}
+                  </p>
                 </div>
               </div>
 
@@ -783,14 +800,29 @@ export default function Configurator() {
                     </span>
                   </label>
                 </div>
-                {logoFileName && (
-                  <p className="text-sm text-[#2E5A4B] mt-2 flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <div className="mt-2 flex items-center justify-between">
+                  {logoFileName ? (
+                    <p className="text-sm text-[#2E5A4B] flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      {logoFileName}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500">Logo-Bereich drehen:</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setLogoRotation((prev) => (prev + 90) % 360)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    title="Logo um 90° drehen"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
-                    {logoFileName}
-                  </p>
-                )}
+                    Drehen ({logoRotation}°)
+                  </button>
+                </div>
               </div>
 
               {/* 3. Farbauswahl */}
