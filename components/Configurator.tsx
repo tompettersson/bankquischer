@@ -259,13 +259,28 @@ function BankquischerPreview({
             transform="translate(-526.3 1028.6) rotate(-90)"
           />
 
+          {/* Rechte Lasche (an der Spitze, für Karabiner) */}
+          <rect
+            className="st1-back"
+            x="2076.6"
+            y="679"
+            width="198.4"
+            height="176.8"
+          />
+
           {/* Gestrichelte Faltlinien */}
+          {/* Linke Lasche */}
           <line className="st0-back" x1="350.4" y1="671.8" x2="151.9" y2="671.8"/>
           <line className="st0-back" x1="350.4" y1="887.8" x2="151.9" y2="887.8"/>
+          {/* Obere Lasche */}
           <line className="st0-back" x1="1041.1" y1="274.9" x2="1041.1" y2="76.4"/>
           <line className="st0-back" x1="825.1" y1="274.9" x2="825.1" y2="76.4"/>
+          {/* Untere Lasche */}
           <line className="st0-back" x1="1041.1" y1="1478.4" x2="1041.1" y2="1280"/>
           <line className="st0-back" x1="825.1" y1="1478.4" x2="825.1" y2="1280"/>
+          {/* Rechte Lasche (an der Spitze) */}
+          <line className="st0-back" x1="2076.6" y1="679" x2="2275" y2="679"/>
+          <line className="st0-back" x1="2076.6" y1="855.8" x2="2275" y2="855.8"/>
 
           {/* Hauptfläche mit abgerundeten Ecken und Druckknopf */}
           <path
@@ -329,20 +344,34 @@ function BankquischerPreview({
         <rect className="st1" x="794.7" y="1280" width="276.8" height="198.4"/>
         
         {/* Linke Lasche (rotiert) */}
-        <rect 
-          className="st1" 
-          x="112.8" 
-          y="678.2" 
-          width="276.8" 
-          height="198.4" 
+        <rect
+          className="st1"
+          x="112.8"
+          y="678.2"
+          width="276.8"
+          height="198.4"
           transform="translate(-526.3 1028.6) rotate(-90)"
         />
 
+        {/* Rechte Lasche (an der Spitze, für Karabiner) */}
+        <rect
+          className="st1"
+          x="2076.6"
+          y="679"
+          width="198.4"
+          height="176.8"
+        />
+
         {/* Gestrichelte Faltlinien */}
+        {/* Linke Lasche */}
         <line className="st0" x1="350.4" y1="671.8" x2="151.9" y2="671.8"/>
         <line className="st0" x1="350.4" y1="887.8" x2="151.9" y2="887.8"/>
+        {/* Obere Lasche */}
         <line className="st0" x1="1041.1" y1="274.9" x2="1041.1" y2="76.4"/>
         <line className="st0" x1="825.1" y1="274.9" x2="825.1" y2="76.4"/>
+        {/* Rechte Lasche (an der Spitze) */}
+        <line className="st0" x1="2076.6" y1="679" x2="2275" y2="679"/>
+        <line className="st0" x1="2076.6" y1="855.8" x2="2275" y2="855.8"/>
         <line className="st0" x1="1041.1" y1="1478.4" x2="1041.1" y2="1280"/>
         <line className="st0" x1="825.1" y1="1478.4" x2="825.1" y2="1280"/>
 
