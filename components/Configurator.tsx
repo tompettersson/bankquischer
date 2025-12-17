@@ -6,67 +6,79 @@ import { useRef, useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { toPng } from 'html-to-image';
 
-// Farbpaletten basierend auf den Stoffmustern (inkl. helle Farben für schwarze Schrift)
+// Stofffarben mit Produktionsnummern (für chinesische Produzenten)
+// Basierend auf den tatsächlichen Stoffmustern aus WhatsApp-Bildern
 const colorPalette = [
-  // Rot/Pink Töne (Reihe 1)
-  { id: 1, name: 'Dunkelrot', hex: '#8B1538' },
-  { id: 2, name: 'Rot', hex: '#C41E3A' },
-  { id: 3, name: 'Pink', hex: '#E84887' },
-  { id: 4, name: 'Magenta', hex: '#D64D8E' },
-  { id: 5, name: 'Orange', hex: '#FF6B35' },
-  // Rosa Töne (Reihe 2)
-  { id: 6, name: 'Hellrosa', hex: '#F8B4C8' },
-  { id: 7, name: 'Rosa', hex: '#F4A4B8' },
-  { id: 8, name: 'Lachs', hex: '#F5A589' },
-  { id: 9, name: 'Karmin', hex: '#D32F2F' },
-  { id: 10, name: 'Gelb', hex: '#FFEB3B' },
-  // Beige/Grün Töne (Reihe 3)
-  { id: 11, name: 'Beige', hex: '#D4B896' },
-  { id: 12, name: 'Sand', hex: '#C9B896' },
-  { id: 13, name: 'Mint', hex: '#A8E6CF' },
-  { id: 14, name: 'Türkis', hex: '#4DD0C4' },
-  { id: 15, name: 'Petrol', hex: '#00838F' },
-  { id: 16, name: 'Olive', hex: '#9E9D24' },
-  { id: 17, name: 'Neongelb', hex: '#CCFF00' },
-  // Lila/Grau Töne (Reihe 4)
-  { id: 18, name: 'Violett', hex: '#7B1FA2' },
-  { id: 19, name: 'Lila', hex: '#9C27B0' },
-  { id: 20, name: 'Grau', hex: '#9E9E9E' },
-  { id: 21, name: 'Altrosa', hex: '#D4A5A5' },
-  { id: 22, name: 'Rosé', hex: '#E8C4C4' },
-  // Grautöne (Palette 2, Reihe 1)
-  { id: 23, name: 'Silber', hex: '#C0C0C0' },
-  { id: 24, name: 'Mittelgrau', hex: '#757575' },
-  { id: 25, name: 'Anthrazit', hex: '#424242' },
-  { id: 26, name: 'Dunkelgrau', hex: '#616161' },
-  { id: 27, name: 'Taupe', hex: '#8D6E63' },
-  // Blau/Grün Töne (Palette 2, Reihe 2)
-  { id: 28, name: 'Himmelblau', hex: '#87CEEB' },
-  { id: 29, name: 'Königsblau', hex: '#4169E1' },
-  { id: 30, name: 'Dunkelblau', hex: '#1A237E' },
-  { id: 31, name: 'Navy', hex: '#0D1B2A' },
-  { id: 32, name: 'Tannengrün', hex: '#1B5E20' },
-  { id: 33, name: 'Waldgrün', hex: '#2E7D32' },
-  { id: 34, name: 'Smaragd', hex: '#00695C' },
-  // Braun/Orange Töne (Palette 2, Reihe 3)
-  { id: 35, name: 'Dunkelbraun', hex: '#3E2723' },
-  { id: 36, name: 'Schokolade', hex: '#4E342E' },
-  { id: 37, name: 'Mokka', hex: '#5D4037' },
-  { id: 38, name: 'Kastanie', hex: '#6D4C41' },
-  { id: 39, name: 'Cognac', hex: '#8D6748' },
-  { id: 40, name: 'Caramel', hex: '#A1887F' },
-  // Bunt (Palette 2, Reihe 4)
-  { id: 41, name: 'Koralle', hex: '#FF7043' },
-  { id: 42, name: 'Apricot', hex: '#FFAB91' },
-  { id: 43, name: 'Lindgrün', hex: '#AED581' },
-  { id: 44, name: 'Grasgrün', hex: '#7CB342' },
-  { id: 45, name: 'Aqua', hex: '#4FC3F7' },
-  { id: 46, name: 'Azur', hex: '#29B6F6' },
-  // Schwarz & Weiß
-  { id: 47, name: 'Schwarz', hex: '#000000' },
-  { id: 48, name: 'Weiß', hex: '#FFFFFF' },
-  { id: 49, name: 'Creme', hex: '#FFFDD0' },
-  { id: 50, name: 'Elfenbein', hex: '#FFFFF0' },
+  // === GELB/ORANGE (145-156) ===
+  { id: 145, name: 'Hellgelb', hex: '#FFF9C4', code: '145' },
+  { id: 146, name: 'Zitronengelb', hex: '#FFF176', code: '146' },
+  { id: 147, name: 'Sonnengelb', hex: '#FFEE58', code: '147' },
+  { id: 148, name: 'Goldgelb', hex: '#FFEB3B', code: '148' },
+  { id: 149, name: 'Senfgelb', hex: '#FDD835', code: '149' },
+  { id: 150, name: 'Bernstein', hex: '#FBC02D', code: '150' },
+  { id: 151, name: 'Orange-Gelb', hex: '#F9A825', code: '151' },
+  { id: 152, name: 'Hellorange', hex: '#FF9800', code: '152' },
+  { id: 153, name: 'Orange', hex: '#FB8C00', code: '153' },
+  { id: 154, name: 'Dunkelorange', hex: '#F57C00', code: '154' },
+  { id: 155, name: 'Tieforange', hex: '#EF6C00', code: '155' },
+  { id: 156, name: 'Rostrot', hex: '#E65100', code: '156' },
+
+  // === KORALLE/LACHS (157-160) ===
+  { id: 157, name: 'Koralle', hex: '#FFAB91', code: '157' },
+  { id: 158, name: 'Lachs', hex: '#FF8A65', code: '158' },
+  { id: 159, name: 'Hellrot-Orange', hex: '#FF7043', code: '159' },
+  { id: 160, name: 'Tomatenrot', hex: '#FF5722', code: '160' },
+
+  // === GRAU/WEISS/SCHWARZ (161-170) ===
+  { id: 161, name: 'Weiß', hex: '#FFFFFF', code: '161' },
+  { id: 162, name: 'Cremeweiß', hex: '#FAFAFA', code: '162' },
+  { id: 163, name: 'Hellgrau', hex: '#E0E0E0', code: '163' },
+  { id: 164, name: 'Silbergrau', hex: '#BDBDBD', code: '164' },
+  { id: 165, name: 'Mittelgrau', hex: '#9E9E9E', code: '165' },
+  { id: 166, name: 'Dunkelgrau', hex: '#757575', code: '166' },
+  { id: 167, name: 'Anthrazit', hex: '#616161', code: '167' },
+  { id: 168, name: 'Schiefergrau', hex: '#424242', code: '168' },
+  { id: 169, name: 'Kohle', hex: '#212121', code: '169' },
+  { id: 170, name: 'Schwarz', hex: '#000000', code: '170' },
+
+  // === BLAU/TÜRKIS (171-177) ===
+  { id: 171, name: 'Hellblau', hex: '#B3E5FC', code: '171' },
+  { id: 172, name: 'Himmelblau', hex: '#81D4FA', code: '172' },
+  { id: 173, name: 'Türkis hell', hex: '#4DD0E1', code: '173' },
+  { id: 174, name: 'Türkis', hex: '#26C6DA', code: '174' },
+  { id: 175, name: 'Türkis dunkel', hex: '#00BCD4', code: '175' },
+  { id: 176, name: 'Petrol', hex: '#00ACC1', code: '176' },
+  { id: 177, name: 'Petrol dunkel', hex: '#00838F', code: '177' },
+
+  // === GRÜN (178-186) ===
+  { id: 178, name: 'Mintgrün', hex: '#C8E6C9', code: '178' },
+  { id: 179, name: 'Hellgrün', hex: '#A5D6A7', code: '179' },
+  { id: 180, name: 'Frühlingsgrün', hex: '#81C784', code: '180' },
+  { id: 181, name: 'Grasgrün', hex: '#66BB6A', code: '181' },
+  { id: 182, name: 'Grün', hex: '#4CAF50', code: '182' },
+  { id: 183, name: 'Waldgrün', hex: '#43A047', code: '183' },
+  { id: 184, name: 'Tannengrün', hex: '#388E3C', code: '184' },
+  { id: 185, name: 'Dunkelgrün', hex: '#2E7D32', code: '185' },
+  { id: 186, name: 'Jägergrün', hex: '#1B5E20', code: '186' },
+
+  // === ROT (187-192) ===
+  { id: 187, name: 'Hellrot', hex: '#EF5350', code: '187' },
+  { id: 188, name: 'Rot', hex: '#F44336', code: '188' },
+  { id: 189, name: 'Karminrot', hex: '#E53935', code: '189' },
+  { id: 190, name: 'Dunkelrot', hex: '#D32F2F', code: '190' },
+  { id: 191, name: 'Weinrot', hex: '#C62828', code: '191' },
+  { id: 192, name: 'Bordeaux', hex: '#B71C1C', code: '192' },
+
+  // === ROSA/PINK/LILA (193-201) ===
+  { id: 193, name: 'Hellrosa', hex: '#F8BBD9', code: '193' },
+  { id: 194, name: 'Rosa', hex: '#F48FB1', code: '194' },
+  { id: 195, name: 'Pink hell', hex: '#F06292', code: '195' },
+  { id: 196, name: 'Pink', hex: '#EC407A', code: '196' },
+  { id: 197, name: 'Pink dunkel', hex: '#E91E63', code: '197' },
+  { id: 198, name: 'Magenta', hex: '#D81B60', code: '198' },
+  { id: 199, name: 'Fuchsia', hex: '#C2185B', code: '199' },
+  { id: 200, name: 'Beere', hex: '#AD1457', code: '200' },
+  { id: 201, name: 'Weinrot-Pink', hex: '#880E4F', code: '201' },
 ];
 
 // Schriftfarben (Schwarz und Weiß)
@@ -596,7 +608,7 @@ export default function Configurator() {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [selectedColor, setSelectedColor] = useState(colorPalette[29]); // Dunkelblau als Default
+  const [selectedColor, setSelectedColor] = useState(colorPalette[2]); // Sonnengelb (147) als Default
   const [selectedCarabiner, setSelectedCarabiner] = useState(carabinerColors[1]); // Blau als Default
   const [selectedTextColor, setSelectedTextColor] = useState(textColors[0]); // Weiß als Default
   const [textLine1, setTextLine1] = useState('');
@@ -689,6 +701,7 @@ export default function Configurator() {
         message,
         selectedColor: selectedColor.name,
         selectedColorHex: selectedColor.hex,
+        selectedColorCode: selectedColor.code,
         selectedCarabiner: selectedCarabiner.name,
         selectedCarabinerHex: selectedCarabiner.hex,
         selectedTextColor: selectedTextColor.name,
@@ -929,21 +942,32 @@ export default function Configurator() {
                   3. Tuchfarbe wählen
                 </label>
                 <p className="text-xs text-gray-500 mb-2">Standard-Tuchfarbe: Gelb (nicht konfigurierbar für Einzelbestellungen)</p>
-                <div className="grid gap-1 p-3 bg-gray-50 rounded-xl" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
-                  {colorPalette.map((color) => (
-                    <button
-                      key={color.id}
-                      type="button"
-                      onClick={() => setSelectedColor(color)}
-                      className={`w-5 h-5 rounded transition-all hover:scale-110 ${
-                        selectedColor.id === color.id
-                          ? 'ring-2 ring-offset-1 ring-[#2E5A4B] scale-110'
-                          : 'ring-1 ring-gray-200'
-                      }`}
-                      style={{ backgroundColor: color.hex }}
-                      title={color.name}
-                    />
-                  ))}
+                <div className="grid gap-1 p-3 bg-gray-50 rounded-xl" style={{ gridTemplateColumns: 'repeat(10, minmax(0, 1fr))' }}>
+                  {colorPalette.map((color) => {
+                    // Bestimme ob die Nummer hell oder dunkel sein soll basierend auf der Hintergrundfarbe
+                    const rgb = hexToRgb(color.hex);
+                    const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+                    const textColorClass = luminance > 0.5 ? 'text-gray-700' : 'text-white';
+
+                    return (
+                      <button
+                        key={color.id}
+                        type="button"
+                        onClick={() => setSelectedColor(color)}
+                        className={`relative w-8 h-8 rounded transition-all hover:scale-110 flex items-center justify-center ${
+                          selectedColor.id === color.id
+                            ? 'ring-2 ring-offset-1 ring-[#2E5A4B] scale-110'
+                            : 'ring-1 ring-gray-300'
+                        }`}
+                        style={{ backgroundColor: color.hex }}
+                        title={`${color.name} (${color.code})`}
+                      >
+                        <span className={`text-[9px] font-semibold ${textColorClass}`}>
+                          {color.code}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

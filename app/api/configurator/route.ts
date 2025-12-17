@@ -8,6 +8,7 @@ export interface ConfiguratorData {
   message: string;
   selectedColor: string;
   selectedColorHex: string;
+  selectedColorCode: string; // Produktionsnummer für China
   selectedCarabiner: string;
   selectedCarabinerHex: string;
   selectedTextColor: string;
@@ -140,6 +141,12 @@ export async function POST(request: NextRequest) {
                 <td style="padding: 8px; border: 1px solid #dee2e6;">
                   <span style="display: inline-block; width: 20px; height: 20px; background: ${configData.selectedColorHex}; border: 1px solid #000; vertical-align: middle; margin-right: 8px;"></span>
                   ${configData.selectedColor} (${configData.selectedColorHex})
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; border: 1px solid #dee2e6;"><strong>Stofffarbe-Nr. (Produktion):</strong></td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">
+                  <span style="font-size: 18px; font-weight: bold; color: #2E5A4B;">${configData.selectedColorCode}</span>
                 </td>
               </tr>
               <tr>
